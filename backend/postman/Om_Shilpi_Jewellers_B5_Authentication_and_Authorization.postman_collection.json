@@ -1,0 +1,167 @@
+{
+  "info": {
+    "_postman_id": "b5-auth-authorization-om-shilpi",
+    "name": "Om Shilpi Jewellers — B5 Authentication & Authorization",
+    "description": "API collection for Phase B5 (Customer & Admin Authentication, Authorization, HttpOnly Cookies, and Password Reset)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Customer Signup",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"janedoe@example.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"SecurePassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/signup",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "signup"]
+        },
+        "description": "Registers a new customer. Role tampering attempts are strictly ignored and role defaults to CUSTOMER."
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"janedoe@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "login"]
+        },
+        "description": "Authenticates user and sets HttpOnly access & refresh cookies."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Current User Profile (/auth/me)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/me",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "me"]
+        },
+        "description": "Retrieves safe user information for authenticated user."
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Protected Route Test",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/admin/test",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "admin", "test"]
+        },
+        "description": "Protected endpoint requiring ADMIN or SUPER_ADMIN role."
+      },
+      "response": []
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/logout",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "logout"]
+        },
+        "description": "Clears HttpOnly cookies and revokes active session in database."
+      },
+      "response": []
+    },
+    {
+      "name": "Forgot Password",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"janedoe@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/forgot-password",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "forgot-password"]
+        },
+        "description": "Generates password reset token hash in DB."
+      },
+      "response": []
+    },
+    {
+      "name": "Change Password",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"currentPassword\": \"SecurePassword123!\",\n  \"newPassword\": \"NewSecurePassword456!\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/auth/password",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "auth", "password"]
+        },
+        "description": "Updates account password for authenticated user."
+      },
+      "response": []
+    }
+  ]
+}

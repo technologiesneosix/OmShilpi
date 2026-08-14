@@ -1,5 +1,14 @@
 import { Request } from 'express';
 import { ZodSchema } from 'zod';
+import { UserRole, UserStatus } from '@prisma/client';
+
+export interface AuthUserPayload {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  status: UserStatus;
+}
 
 export interface PaginationParams {
   page: number;
@@ -41,4 +50,15 @@ export type TypedRequest<
   TBody = unknown,
   TQuery = unknown,
   TParams = unknown
-> = Request<TParams, unknown, TBody, TQuery>;
+> = Request<TParams, unknown, TBody, TQuery> & {
+  user?: AuthUserPayload;
+};
+
+// Extend global Express Request interface
+declare global {
+  namespace Express {
+    interface Request {
+      user?: AuthUserPayload;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import { env } from './config/env';
 import { requestLogger } from './middleware/requestLogger';
 import { notFoundHandler } from './middleware/notFound.middleware';
@@ -17,7 +18,7 @@ const allowedOrigins = [env.FRONTEND_URL];
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests) in development
+      // Allow requests with no origin (like mobile apps or Postman) in development
       if (!origin || allowedOrigins.includes(origin) || env.NODE_ENV === 'development') {
         callback(null, true);
       } else {
@@ -27,6 +28,9 @@ app.use(
     credentials: true,
   })
 );
+
+// Cookie parsing middleware
+app.use(cookieParser(env.COOKIE_SECRET));
 
 // Request parsing
 app.use(express.json({ limit: '10mb' }));

@@ -19,64 +19,30 @@ Production-level backend platform for **Om Shilpi Jewellers** e-commerce applica
 
 ---
 
-## 🔐 Authentication & Authorization Architecture
-
-### 1. Token & Cookie Strategy
-- **Access Token:** Short-lived JWT (15 min) stored in HttpOnly cookie `omshilpi_access_token`.
-- **Refresh Token:** Long-lived JWT (7 days) stored in HttpOnly cookie `omshilpi_refresh_token` and persisted as SHA-256 hash in database (`RefreshToken` table).
-- **Cookie Flags:** `HttpOnly: true`, `SameSite: lax`, `Secure: false` (in dev) / `true` (in production), `Path: '/'`.
-- **Token Protection:** Tokens are **never** accessible to browser JavaScript (`localStorage` / `sessionStorage` strictly avoided).
-
-### 2. Role-Based Access Control (RBAC)
-- **`CUSTOMER`**: Default role assigned to all public signups. Role tampering attempts on signup are strictly ignored.
-- **`STAFF`**: Staff operations.
-- **`ADMIN` / `SUPER_ADMIN`**: Full administrative operations. Accessible via `requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN)`.
-
-### 3. Password Reset Workflow
-- Generates cryptographically random 32-byte token (`crypto.randomBytes(32)`).
-- Stores SHA-256 hash in `PasswordResetToken` table with 15-minute expiration.
-- Password reset automatically invalidates user's active sessions.
-- In production, email integration point is prepared (deferred to Phase B17).
-
----
-
 ## 📁 Project Structure
 
 ```text
 backend/
 ├── src/
 │   ├── config/             # Environment, Winston logger & Prisma client
-│   │   ├── env.ts
-│   │   ├── logger.ts
-│   │   └── prisma.ts
-│   ├── controllers/        # Express route controllers
-│   │   ├── auth.controller.ts # Signup, Login, Logout, Me, Password reset
+│   ├── controllers/        # Express route controllers (Auth, Health, Category)
+│   │   ├── auth.controller.ts
+│   │   ├── category.controller.ts
 │   │   └── health.controller.ts
-│   ├── middleware/         # Application middleware
-│   │   ├── auth.middleware.ts        # requireAuth & requireRole middlewares
-│   │   ├── error.middleware.ts       # Global error & Prisma error mapping
-│   │   ├── notFound.middleware.ts    # 404 handler
-│   │   ├── rateLimiter.middleware.ts # Rate limiting for auth routes
-│   │   ├── requestLogger.ts         # Request logger via Morgan & Winston
-│   │   └── validation.middleware.ts # Zod request validation middleware
+│   ├── middleware/         # Application middleware (Auth, Error, 404, RateLimiter, Validation)
 │   ├── routes/             # Centralized route definitions
-│   │   ├── auth.routes.ts   # /api/v1/auth endpoints
+│   │   ├── auth.routes.ts
+│   │   ├── category.routes.ts
 │   │   ├── health.routes.ts
 │   │   └── index.ts
-│   ├── services/           # Business logic services
-│   │   └── auth.service.ts  # Authentication service logic
-│   ├── utils/              # API Error, Response, Password & Token utilities
-│   │   ├── apiError.ts
-│   │   ├── apiResponse.ts
-│   │   ├── asyncHandler.ts
-│   │   ├── pagination.ts
-│   │   ├── password.ts      # Bcrypt password hashing
-│   │   ├── queryHelpers.ts
-│   │   └── tokens.ts        # JWT & crypto SHA-256 token hashing
-│   ├── validators/         # Zod schemas
-│   │   └── auth.validator.ts
+│   ├── services/           # Business logic services (Auth, Category)
+│   │   ├── auth.service.ts
+│   │   └── category.service.ts
+│   ├── utils/              # API Error, Response, Password, Token & Pagination utilities
+│   ├── validators/         # Zod schemas (Auth, Category)
+│   │   ├── auth.validator.ts
+│   │   └── category.validator.ts
 │   ├── types/              # Shared TypeScript types & Express request context
-│   │   └── index.ts
 │   ├── app.ts              # Express application setup
 │   └── server.ts           # Server entry point & graceful shutdown
 ├── prisma/
@@ -90,34 +56,30 @@ backend/
 
 ---
 
-## ⚙️ Authentication API Endpoints
+## 💎 Category Management Architecture (Phase B6)
 
-| Endpoint | Method | Access | Description |
-|---|---|---|---|
-| `/api/v1/auth/signup` | `POST` | Public | Customer registration (Forces `role: CUSTOMER`) |
-| `/api/v1/auth/login` | `POST` | Public | User login (Sets HttpOnly auth cookies) |
-| `/api/v1/auth/logout` | `POST` | Public / Auth | User logout (Clears cookies & revokes session) |
-| `/api/v1/auth/me` | `GET` | Protected | Current user profile details |
-| `/api/v1/auth/password` | `PATCH` | Protected | Change account password |
-| `/api/v1/auth/forgot-password` | `POST` | Public | Request password reset token |
-| `/api/v1/auth/reset-password` | `POST` | Public | Reset password using reset token |
-| `/api/v1/auth/admin/test` | `GET` | Admin | Protected verification route for `ADMIN` / `SUPER_ADMIN` |
+### 1. Public vs Admin Access
+- **Public Endpoints (`/api/v1/categories`):** Accessible without authentication. Returns **only** active categories (`isActive = true`) ordered deterministically (`sortOrder asc`, `name asc`).
+- **Admin Endpoints (`/api/v1/admin/categories`):** Strictly protected by `requireAuth` and `requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN)`. `CUSTOMER` and `STAFF` users receive `403 Forbidden`.
+
+### 2. Auto-Slug Generation & Uniqueness
+- Slugs are auto-generated from category names (`slugify`) if omitted, or normalized when provided.
+- Duplicate slug attempts return `409 Conflict` (`CATEGORY_SLUG_EXISTS`).
+
+### 3. Product Association & Deactivation Safety
+- Category deletion checks for associated products (`_count.products > 0`).
+- If products exist, the category is safely soft-deactivated (`isActive = false`) rather than deleted, preventing orphan data.
 
 ---
 
-## 🗄️ Database & Prisma Commands
+## ⚙️ Category API Endpoints
 
-```bash
-# Validate Prisma schema
-npx prisma validate
-
-# Generate Prisma Client
-npm run prisma:generate
-
-# Check migration status
-npx prisma migrate status
-
-# Typecheck & build TypeScript
-npm run typecheck
-npm run build
-```
+| Endpoint | Method | Access | Description |
+|---|---|---|---|
+| `/api/v1/categories` | `GET` | Public | List all active categories |
+| `/api/v1/categories/:slug` | `GET` | Public | Get active category details by slug |
+| `/api/v1/admin/categories` | `POST` | Admin | Create a new category |
+| `/api/v1/admin/categories` | `GET` | Admin | List all categories (with pagination, search, & status filter) |
+| `/api/v1/admin/categories/:id` | `GET` | Admin | Get category details by ID |
+| `/api/v1/admin/categories/:id` | `PATCH` | Admin | Update category details |
+| `/api/v1/admin/categories/:id` | `DELETE` | Admin | Delete category (or soft-deactivate if products exist) |

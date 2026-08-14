@@ -1,0 +1,103 @@
+{
+  "info": {
+    "_postman_id": "b6-category-management-om-shilpi",
+    "name": "Om Shilpi Jewellers — B6 Category Management",
+    "description": "API collection for Phase B6 (Public Category Browsing, Admin CRUD, Auto-slug handling, Product Deactivation Protection, Pagination & Whitelisted Sorting)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public Categories",
+      "item": [
+        {
+          "name": "List Active Categories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories"] }
+          }
+        },
+        {
+          "name": "Get Active Category by Slug",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories/gold-jewellery", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories", "gold-jewellery"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Categories",
+      "item": [
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gold Jewellery\",\n  \"slug\": \"gold-jewellery\",\n  \"description\": \"Traditional & Modern Gold Ornaments\",\n  \"sortOrder\": 1\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        },
+        {
+          "name": "List Categories (Paginated, Search & Filter)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/categories?search=gold&status=all&page=1&limit=20&sortBy=sortOrder&sortOrder=asc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "categories"],
+              "query": [
+                { "key": "search", "value": "gold" },
+                { "key": "status", "value": "all" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "sortBy", "value": "sortOrder" },
+                { "key": "sortOrder", "value": "asc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories", ":id"] }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"description\": \"Updated Gold Ornaments Description\",\n  \"sortOrder\": 5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories", ":id"] }
+          }
+        },
+        {
+          "name": "Delete / Soft Deactivate Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories", ":id"] }
+          }
+        }
+      ]
+    }
+  ]
+}

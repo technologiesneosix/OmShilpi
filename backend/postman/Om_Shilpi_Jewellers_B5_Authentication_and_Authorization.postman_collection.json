@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b5-auth-authorization-om-shilpi",
     "name": "Om Shilpi Jewellers — B5 Authentication & Authorization",
-    "description": "API collection for Phase B5 (Customer & Admin Authentication, Authorization, HttpOnly Cookies, and Password Reset)",
+    "description": "Comprehensive Postman test suite for Phase B5 (Customer & Admin Authentication, Authorization, HttpOnly Cookies, and Security Controls)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -14,154 +14,184 @@
   ],
   "item": [
     {
-      "name": "Customer Signup",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Signup — Valid Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"unique-customer@example.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"StrongTestPassword123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/signup", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "signup"] }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"janedoe@example.com\",\n  \"phone\": \"9876543210\",\n  \"password\": \"SecurePassword123!\"\n}"
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/signup",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "signup"]
+        {
+          "name": "Login — Valid",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"unique-customer@example.com\",\n  \"password\": \"StrongTestPassword123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
+          }
         },
-        "description": "Registers a new customer. Role tampering attempts are strictly ignored and role defaults to CUSTOMER."
-      },
-      "response": []
+        {
+          "name": "Get Current User Profile (/auth/me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Password Change — Valid",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"StrongTestPassword123!\",\n  \"newPassword\": \"NewStrongPassword456!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "password"] }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"unique-customer@example.com\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<DEV_RESET_TOKEN>\",\n  \"newPassword\": \"ResetPassword789!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "reset-password"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "logout"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Login",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Customer Access Test (403 on Admin Route)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/admin/test", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "admin", "test"] }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"janedoe@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
         },
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/login",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "login"]
+        {
+          "name": "Staff Access Test (403 on Admin Route)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/admin/test", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "admin", "test"] }
+          }
         },
-        "description": "Authenticates user and sets HttpOnly access & refresh cookies."
-      },
-      "response": []
+        {
+          "name": "Admin Access Test (200 OK)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/admin/test", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "admin", "test"] }
+          }
+        },
+        {
+          "name": "Super Admin Access Test (200 OK)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/admin/test", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "admin", "test"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Get Current User Profile (/auth/me)",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "type": "text"
+      "name": "Security",
+      "item": [
+        {
+          "name": "Duplicate Signup Check (409 Conflict)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"unique-customer@example.com\",\n  \"password\": \"StrongTestPassword123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/signup", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "signup"] }
           }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/me",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "me"]
         },
-        "description": "Retrieves safe user information for authenticated user."
-      },
-      "response": []
+        {
+          "name": "Invalid Login Check (401 Unauthorized)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"unique-customer@example.com\",\n  \"password\": \"WrongPassword123!\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "login"] }
+          }
+        },
+        {
+          "name": "Role Escalation Prevention Check",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Attacker\",\n  \"email\": \"attacker-check@example.com\",\n  \"password\": \"StrongTestPassword123!\",\n  \"role\": \"SUPER_ADMIN\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/signup", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "signup"] }
+          }
+        }
+      ]
     },
     {
-      "name": "Admin Protected Route Test",
-      "request": {
-        "method": "GET",
-        "header": [
-          {
-            "key": "Accept",
-            "value": "application/json",
-            "type": "text"
+      "name": "Regression",
+      "item": [
+        {
+          "name": "B2 Health Check",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
           }
-        ],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/admin/test",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "admin", "test"]
         },
-        "description": "Protected endpoint requiring ADMIN or SUPER_ADMIN role."
-      },
-      "response": []
-    },
-    {
-      "name": "Logout",
-      "request": {
-        "method": "POST",
-        "header": [],
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/logout",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "logout"]
-        },
-        "description": "Clears HttpOnly cookies and revokes active session in database."
-      },
-      "response": []
-    },
-    {
-      "name": "Forgot Password",
-      "request": {
-        "method": "POST",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
+        {
+          "name": "B4 404 Route Check",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/non-existent-route", "host": ["{{baseUrl}}"], "path": ["api", "v1", "non-existent-route"] }
           }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"email\": \"janedoe@example.com\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/forgot-password",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "forgot-password"]
-        },
-        "description": "Generates password reset token hash in DB."
-      },
-      "response": []
-    },
-    {
-      "name": "Change Password",
-      "request": {
-        "method": "PATCH",
-        "header": [
-          {
-            "key": "Content-Type",
-            "value": "application/json",
-            "type": "text"
-          }
-        ],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"currentPassword\": \"SecurePassword123!\",\n  \"newPassword\": \"NewSecurePassword456!\"\n}"
-        },
-        "url": {
-          "raw": "{{baseUrl}}/api/v1/auth/password",
-          "host": ["{{baseUrl}}"],
-          "path": ["api", "v1", "auth", "password"]
-        },
-        "description": "Updates account password for authenticated user."
-      },
-      "response": []
+        }
+      ]
     }
   ]
 }

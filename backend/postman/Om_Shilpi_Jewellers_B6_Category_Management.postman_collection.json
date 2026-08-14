@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b6-category-management-om-shilpi",
     "name": "Om Shilpi Jewellers — B6 Category Management",
-    "description": "API collection for Phase B6 (Public Category Browsing, Admin CRUD, Auto-slug handling, Product Deactivation Protection, Pagination & Whitelisted Sorting)",
+    "description": "Comprehensive Postman test collection for Phase B6 Category Management",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -14,7 +14,7 @@
   ],
   "item": [
     {
-      "name": "Public Categories",
+      "name": "Public",
       "item": [
         {
           "name": "List Active Categories",
@@ -25,17 +25,17 @@
           }
         },
         {
-          "name": "Get Active Category by Slug",
+          "name": "Get Category by Slug",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/categories/gold-jewellery", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories", "gold-jewellery"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/categories/b6-test-gold-jewellery", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories", "b6-test-gold-jewellery"] }
           }
         }
       ]
     },
     {
-      "name": "Admin Categories",
+      "name": "Admin",
       "item": [
         {
           "name": "Create Category",
@@ -44,33 +44,21 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Gold Jewellery\",\n  \"slug\": \"gold-jewellery\",\n  \"description\": \"Traditional & Modern Gold Ornaments\",\n  \"sortOrder\": 1\n}"
+              "raw": "{\n  \"name\": \"B6 Test Gold Jewellery\",\n  \"slug\": \"b6-test-gold-jewellery\",\n  \"description\": \"B6 test category\",\n  \"sortOrder\": 100\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
           }
         },
         {
-          "name": "List Categories (Paginated, Search & Filter)",
+          "name": "List Categories (Admin)",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/admin/categories?search=gold&status=all&page=1&limit=20&sortBy=sortOrder&sortOrder=asc",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "admin", "categories"],
-              "query": [
-                { "key": "search", "value": "gold" },
-                { "key": "status", "value": "all" },
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
-                { "key": "sortBy", "value": "sortOrder" },
-                { "key": "sortOrder", "value": "asc" }
-              ]
-            }
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories?page=1&limit=10&status=all", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
           }
         },
         {
-          "name": "Get Category by ID",
+          "name": "Get Category by ID (Admin)",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
@@ -84,17 +72,140 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"description\": \"Updated Gold Ornaments Description\",\n  \"sortOrder\": 5\n}"
+              "raw": "{\n  \"name\": \"B6 Updated Gold Jewellery\",\n  \"description\": \"Updated description\",\n  \"sortOrder\": 50\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/categories/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories", ":id"] }
           }
         },
         {
-          "name": "Delete / Soft Deactivate Category",
+          "name": "Deactivate or Delete Category",
           "request": {
             "method": "DELETE",
             "header": [],
             "url": { "raw": "{{baseUrl}}/api/v1/admin/categories/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Customer Forbidden (403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\",\n  \"slug\": \"test\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        },
+        {
+          "name": "Staff Forbidden (403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test\",\n  \"slug\": \"test\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        },
+        {
+          "name": "Admin Allowed (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin Category\",\n  \"slug\": \"admin-category\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        },
+        {
+          "name": "Super Admin Allowed (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Super Admin Category\",\n  \"slug\": \"super-admin-category\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        },
+        {
+          "name": "Unauthenticated Forbidden (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation",
+      "item": [
+        {
+          "name": "Duplicate Slug Conflict (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate\",\n  \"slug\": \"b6-test-gold-jewellery\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        },
+        {
+          "name": "Invalid ID (404/400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories/non-existent-id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories", "non-existent-id"] }
+          }
+        },
+        {
+          "name": "Invalid Sort Field (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/categories?sortBy=passwordHash", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "categories"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regression",
+      "item": [
+        {
+          "name": "B2 Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "B5 Auth Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "me"] }
+          }
+        },
+        {
+          "name": "B4 404 Route",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/non-existent-route", "host": ["{{baseUrl}}"], "path": ["api", "v1", "non-existent-route"] }
           }
         }
       ]

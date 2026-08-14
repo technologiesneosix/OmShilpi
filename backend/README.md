@@ -17,6 +17,28 @@ Production-level backend platform for **Om Shilpi Jewellers** e-commerce applica
 
 ---
 
+## 🏗️ Backend Request Lifecycle Architecture
+
+```text
+HTTP Request
+    ↓
+Express Route (/api/v1/...)
+    ↓
+Middleware (Helmet, CORS, RequestLogger)
+    ↓
+Validation (validateRequest using Zod schema)
+    ↓
+Controller (asyncHandler wrapped controller)
+    ↓
+Service Layer (Business logic & calculations)
+    ↓
+Prisma ORM & Aiven MySQL
+    ↓
+Standardized API Response (ApiResponse.success / ApiResponse.paginated)
+```
+
+---
+
 ## 📁 Project Structure
 
 ```text
@@ -25,19 +47,26 @@ backend/
 │   ├── config/             # Typed environment, Winston logger & Prisma client
 │   │   ├── env.ts
 │   │   ├── logger.ts
-│   │   └── prisma.ts       # Singleton PrismaClient & health checker
-│   ├── controllers/        # Route controllers
+│   │   └── prisma.ts       # Singleton PrismaClient, health check & transaction helper
+│   ├── controllers/        # Express controllers (HTTP request/response handling)
 │   │   └── health.controller.ts
-│   ├── middleware/         # Application middleware (error, logger, 404)
-│   │   ├── error.middleware.ts
-│   │   ├── notFound.middleware.ts
-│   │   └── requestLogger.ts
+│   ├── middleware/         # Application middleware
+│   │   ├── error.middleware.ts       # Prisma & global error mapping
+│   │   ├── notFound.middleware.ts    # 404 handler
+│   │   ├── requestLogger.ts         # HTTP request logging via Morgan & Winston
+│   │   └── validation.middleware.ts # Zod request validation middleware
 │   ├── routes/             # Centralized route definitions
 │   │   ├── health.routes.ts
 │   │   └── index.ts
-│   ├── utils/              # API Error & Response utility classes
-│   │   ├── apiError.ts
-│   │   └── apiResponse.ts
+│   ├── services/           # Reusable business logic services
+│   ├── utils/              # API Error, Response, Async & Pagination utilities
+│   │   ├── apiError.ts       # Standardized application error class
+│   │   ├── apiResponse.ts    # Success & paginated response helpers
+│   │   ├── asyncHandler.ts   # Async controller wrapper
+│   │   ├── pagination.ts    # Safe pagination query parser & meta builder
+│   │   └── queryHelpers.ts  # Whitelisted field sorting parser
+│   ├── types/              # Shared TypeScript types & interfaces
+│   │   └── index.ts
 │   ├── app.ts              # Express application setup
 │   └── server.ts           # Server entry point & graceful shutdown
 ├── prisma/
@@ -54,74 +83,47 @@ backend/
 
 ---
 
-## 🗄️ Database Schema & Domain Model
+## ⚙️ Core Architectural Principles
 
-### Core Entities & Models (Phase B3)
+### 1. Controller / Service Responsibility Separation
+- **Controllers:** Accept HTTP requests, invoke middleware/validators, invoke services, and return standardized API responses. Controllers contain **zero** direct SQL/Prisma logic or complex business calculations.
+- **Services:** Encapsulate all business rules, database queries, transactions, calculations, and domain logic.
 
-| Model | Description | Unique Constraints / Indexes |
-|---|---|---|
-| **User** | Customers, Staff, Admins, Super Admins | Unique `email`, `phone` |
-| **Address** | Multiple customer shipping/billing addresses | Indexed `userId` |
-| **Category** | Product categorization | Unique `slug` |
-| **Collection** | Specialized curated jewellery collections | Unique `slug` |
-| **Product** | Comprehensive jewellery products (metal, purity, weights, stone details) | Unique `slug`, `sku`; Decimal prices/weights |
-| **ProductImage** | Separate URL metadata for product images | Indexed `productId`, `isPrimary` |
-| **Inventory** | Stock quantity & low-stock alerts linked to Product | Unique `productId` |
-| **Cart & CartItem** | Customer shopping carts | Unique `userId`; Composite unique `[cartId, productId]` |
-| **Wishlist & WishlistItem** | Customer saved items | Unique `userId`; Composite unique `[wishlistId, productId]` |
-| **Order & OrderItem** | Complete historical orders with address & price snapshots | Unique `orderNumber`; Decimal total fields |
-| **Payment** | Razorpay payment records & statuses | Unique `providerOrderId`, `providerPaymentId` |
-| **Enquiry** | Customer contact & jewellery inquiry forms | Indexed `email`, `status` |
-| **Banner** | Dynamic homepage marketing banners | Indexed `isActive`, `sortOrder` |
-| **Testimonial** | Customer reviews & testimonials | Indexed `isActive`, `sortOrder` |
-| **WebsiteContent** | Controlled dynamic website content sections | Unique `key` |
+### 2. Validation System (`validateRequest`)
+- Request bodies, query parameters, and URL route parameters are validated using Zod schemas via `validateRequest({ body, query, params })`.
+- Invalid requests return a standardized `400 Bad Request` with `code: "VALIDATION_ERROR"`.
 
----
+### 3. Safe Error Handling & Prisma Error Mapping
+- `PrismaClientKnownRequestError` instances are mapped automatically:
+  - `P2002` (Unique constraint) -> `409 Conflict` (`CONFLICT`)
+  - `P2025` (Record not found) -> `404 Not Found` (`NOT_FOUND`)
+  - `P2003` (Foreign key violation) -> `400 Bad Request` (`FOREIGN_KEY_VIOLATION`)
+- Database credentials, raw SQL strings, and stack traces are **never** exposed in production.
 
-## 📐 Key Design Architectural Principles
+### 4. Safe Pagination & Sorting Utilities
+- `parsePagination(query)` safely parses `page` (default `1`) and `limit` (default `20`, max `100`), returning `skip` and `take`.
+- `parseSort(sortParam, allowedFields)` validates requested sort fields against a strict whitelist to prevent arbitrary field injection.
 
-### 1. Precision Monetary & Weight Types (`Decimal`)
-- Prices (`price`, `compareAtPrice`, `subtotal`, `discount`, `tax`, `total`, `amount`) are strictly defined as `@db.Decimal(12, 2)`.
-- Weights (`grossWeight`, `netWeight`, `stoneWeight`) are defined as `@db.Decimal(8, 3)`.
-- Floating-point representations (`Float`) are strictly avoided for financial precision.
-
-### 2. Historical Order Snapshot Strategy
-- Orders preserve the exact shipping address (`shippingFullName`, `shippingPhone`, `shippingAddressLine1`, `shippingCity`, etc.) at the moment of order placement.
-- `OrderItem` preserves `productNameSnapshot`, `skuSnapshot`, and `unitPrice` directly on the item record.
-- Updating or deleting products or user addresses will **never** alter historical order data.
-
-### 3. Safe Referential Integrity
-- `User` -> `Order`: `onDelete: SetNull` (Preserves orders if user account is removed).
-- `Product` -> `OrderItem`: `onDelete: SetNull` (Preserves order history if product is archived/deleted).
-- `Product` -> `Category`/`Collection`: `onDelete: SetNull` (Preserves product records if a category/collection is removed).
-- `User` -> `Address`/`Cart`/`Wishlist`: `onDelete: Cascade`.
+### 5. Transaction Strategy (`executeTransaction`)
+- Interactive database operations requiring atomicity (e.g. multi-step order placement or inventory reservation) utilize `executeTransaction((tx) => ...)` powered by Prisma's interactive transaction engine.
 
 ---
 
 ## 🗄️ Database & Prisma Commands
 
-### 1. Validate Prisma Schema
 ```bash
+# Validate Prisma schema
 npx prisma validate
-```
 
-### 2. Generate Prisma Client
-```bash
+# Generate Prisma Client
 npm run prisma:generate
-```
 
-### 3. Apply Migrations (Dev / Production)
-```bash
-# Development: Create and apply safe dev migration
-npx prisma migrate dev --name <migration_name>
+# Check migration status
+npx prisma migrate status
 
-# Production: Apply pending migrations
-npx prisma migrate deploy
-```
-
-### 4. Prisma Studio
-```bash
-npx prisma studio
+# Typecheck & build TypeScript
+npm run typecheck
+npm run build
 ```
 
 ---

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logger } from './logger';
 
 declare global {
@@ -33,5 +33,27 @@ export const checkDatabaseConnection = async (): Promise<boolean> => {
       error: error instanceof Error ? error.message : 'Unknown database error',
     });
     return false;
+  }
+};
+
+/**
+ * Executes a sequence of database operations within an interactive Prisma transaction.
+ */
+export const executeTransaction = async <T>(
+  action: (tx: Prisma.TransactionClient) => Promise<T>,
+  options?: { maxWait?: number; timeout?: number }
+): Promise<T> => {
+  return prisma.$transaction(action, options);
+};
+
+/**
+ * Gracefully disconnects the Prisma client connection pool.
+ */
+export const disconnectDatabase = async (): Promise<void> => {
+  try {
+    await prisma.$disconnect();
+    logger.info('Prisma Client disconnected cleanly.');
+  } catch (error) {
+    logger.error('Error disconnecting Prisma Client:', { error });
   }
 };

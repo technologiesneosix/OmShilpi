@@ -1,0 +1,77 @@
+{
+  "info": {
+    "_postman_id": "b4-core-backend-architecture-om-shilpi",
+    "name": "Om Shilpi Jewellers — B4 Core Backend Architecture",
+    "description": "API & Architecture verification collection for Phase B4 (Core Reusable Execution Pipeline & Middleware Architecture)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check (Core Architecture & DB Connected)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "health"]
+        },
+        "description": "Verifies backend runtime and database connectivity after applying B4 execution pipeline architecture."
+      },
+      "response": []
+    },
+    {
+      "name": "404 Not Found Route Test",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/non-existent-route",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "non-existent-route"]
+        },
+        "description": "Verifies 404 response handling for undefined endpoints."
+      },
+      "response": []
+    },
+    {
+      "name": "Unsupported Method Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "health"]
+        },
+        "description": "Verifies non-handled HTTP methods respond with 404/Not Found."
+      },
+      "response": []
+    }
+  ]
+}

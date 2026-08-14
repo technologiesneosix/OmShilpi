@@ -1,14 +1,5 @@
 import { Response } from 'express';
-
-export interface ApiResponsePayload<T = unknown> {
-  success: boolean;
-  message: string;
-  data?: T;
-  error?: {
-    code: string;
-    details?: unknown;
-  };
-}
+import { ApiResponsePayload, PaginationMeta } from '../types';
 
 export class ApiResponse {
   static success<T>(
@@ -29,6 +20,23 @@ export class ApiResponse {
     return res.status(statusCode).json(payload);
   }
 
+  static paginated<T>(
+    res: Response,
+    message: string,
+    data: T[],
+    meta: PaginationMeta,
+    statusCode: number = 200
+  ): Response {
+    const payload: ApiResponsePayload<T[]> = {
+      success: true,
+      message,
+      data,
+      meta,
+    };
+
+    return res.status(statusCode).json(payload);
+  }
+
   static error(
     res: Response,
     message: string,
@@ -41,7 +49,7 @@ export class ApiResponse {
       message,
       error: {
         code: errorCode,
-        ...(details ? { details } : {}),
+        ...(details !== undefined ? { details } : {}),
       },
     };
 

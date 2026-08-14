@@ -1,6 +1,7 @@
 import app from './app';
 import { env } from './config/env';
 import { logger } from './config/logger';
+import { disconnectDatabase } from './config/prisma';
 
 const server = app.listen(env.PORT, () => {
   logger.info(`🚀 Om Shilpi Backend running in [${env.NODE_ENV}] mode on port ${env.PORT}`);
@@ -11,7 +12,8 @@ const server = app.listen(env.PORT, () => {
 process.on('unhandledRejection', (reason: Error) => {
   logger.error('💥 UNHANDLED REJECTION! Shutting down server...');
   logger.error(reason.name, reason.message);
-  server.close(() => {
+  server.close(async () => {
+    await disconnectDatabase();
     process.exit(1);
   });
 });
@@ -26,8 +28,9 @@ process.on('uncaughtException', (error: Error) => {
 // Handle graceful shutdown signals
 const gracefulShutdown = (signal: string) => {
   logger.info(`Received ${signal}. Shutting down gracefully...`);
-  server.close(() => {
+  server.close(async () => {
     logger.info('HTTP server closed.');
+    await disconnectDatabase();
     process.exit(0);
   });
 };

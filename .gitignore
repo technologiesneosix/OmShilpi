@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Production build
+dist/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Prisma
+# Keep schema.prisma in git, but ignore generated binaries if any
+prisma/migrations/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

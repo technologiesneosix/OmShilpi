@@ -153,40 +153,45 @@ export class CartService {
 
     const cart = await this.getOrCreateCart(userId);
 
-    const existingItems = await prisma.cartItem.findMany({
-      where: { cartId: cart.id },
-    });
-
-    const existingItem = existingItems.find((item) => item.productId === input.productId);
-
-    if (!existingItem && existingItems.length >= MAX_DISTINCT_CART_ITEMS) {
-      throw ApiError.badRequest(
-        `Cart item limit reached. Maximum ${MAX_DISTINCT_CART_ITEMS} distinct items allowed per cart.`,
-        'CART_ITEM_LIMIT_EXCEEDED'
-      );
-    }
-
     await prisma.$transaction(async (tx) => {
-      if (existingItem) {
-        const newQuantity = existingItem.quantity + input.quantity;
-        if (newQuantity > MAX_CART_ITEM_QUANTITY) {
+      const currentItem = await tx.cartItem.findUnique({
+        where: {
+          cartId_productId: {
+            cartId: cart.id,
+            productId: input.productId,
+          },
+        },
+      });
+
+      if (currentItem) {
+        const updated = await tx.cartItem.update({
+          where: { id: currentItem.id },
+          data: { quantity: { increment: input.quantity } },
+        });
+
+        if (updated.quantity > MAX_CART_ITEM_QUANTITY) {
           throw ApiError.badRequest(
-            `Maximum allowed quantity per cart item is ${MAX_CART_ITEM_QUANTITY}. Current: ${existingItem.quantity}, Attempted total: ${newQuantity}`,
+            `Maximum allowed quantity per cart item is ${MAX_CART_ITEM_QUANTITY}.`,
             'CART_ITEM_LIMIT_EXCEEDED'
           );
         }
-        if (currentStock < newQuantity) {
+        if (currentStock < updated.quantity) {
           throw ApiError.badRequest(
-            `Insufficient stock for '${product.name}'. Available: ${currentStock}, Attempted total: ${newQuantity}`,
+            `Insufficient stock for '${product.name}'. Available: ${currentStock}, Attempted total: ${updated.quantity}`,
             'INSUFFICIENT_STOCK'
           );
         }
-
-        await tx.cartItem.update({
-          where: { id: existingItem.id },
-          data: { quantity: newQuantity },
-        });
       } else {
+        const distinctCount = await tx.cartItem.count({
+          where: { cartId: cart.id },
+        });
+        if (distinctCount >= MAX_DISTINCT_CART_ITEMS) {
+          throw ApiError.badRequest(
+            `Cart item limit reached. Maximum ${MAX_DISTINCT_CART_ITEMS} distinct items allowed per cart.`,
+            'CART_ITEM_LIMIT_EXCEEDED'
+          );
+        }
+
         await tx.cartItem.create({
           data: {
             cartId: cart.id,

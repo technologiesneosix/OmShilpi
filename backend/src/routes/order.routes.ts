@@ -3,21 +3,8 @@ import { UserRole } from '@prisma/client';
 import { requireAuth, requireRole } from '../middleware/auth.middleware';
 import { OrderController } from '../controllers/order.controller';
 
-const checkoutRouter = Router();
 const orderCustomerRouter = Router();
 const orderAdminRouter = Router();
-
-// ===================================================
-// CHECKOUT ROUTES (Customer)
-// ===================================================
-checkoutRouter.use(requireAuth, requireRole('CUSTOMER'));
-
-/**
- * @route POST /api/v1/checkout/preview
- * @desc Get checkout preview summary with calculated totals and stock availability
- * @access Customer
- */
-checkoutRouter.post('/preview', OrderController.getCheckoutPreview);
 
 // ===================================================
 // CUSTOMER ORDER ROUTES
@@ -26,7 +13,7 @@ orderCustomerRouter.use(requireAuth, requireRole('CUSTOMER'));
 
 /**
  * @route POST /api/v1/orders
- * @desc Create order from customer cart
+ * @desc Create order from customer cart (Alias to checkout execution)
  * @access Customer
  */
 orderCustomerRouter.post('/', OrderController.createOrder);
@@ -72,7 +59,6 @@ orderAdminRouter.get('/', OrderController.getAdminOrders);
 orderAdminRouter.patch('/:id/status', OrderController.updateOrderStatus);
 
 export {
-  checkoutRouter,
   orderCustomerRouter,
   orderAdminRouter,
 };

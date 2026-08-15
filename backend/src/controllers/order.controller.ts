@@ -2,9 +2,8 @@ import { Request, Response } from 'express';
 import { asyncHandler } from '../utils/asyncHandler';
 import { ApiResponse } from '../utils/apiResponse';
 import { OrderService } from '../services/order.service';
+import { CheckoutController } from './checkout.controller';
 import {
-  checkoutPreviewSchema,
-  createOrderSchema,
   orderIdParamSchema,
   updateOrderStatusSchema,
   adminOrderQuerySchema,
@@ -12,28 +11,10 @@ import {
 
 export class OrderController {
   /**
-   * Calculates checkout preview summary (Customer).
-   * POST /api/v1/checkout/preview
-   */
-  static getCheckoutPreview = asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!.id;
-    const input = checkoutPreviewSchema.parse(req.body);
-    const preview = await OrderService.getCheckoutPreview(userId, input);
-
-    return ApiResponse.success(res, 'Checkout preview generated successfully', preview);
-  });
-
-  /**
-   * Converts customer cart into an Order (Customer).
+   * Alias to CheckoutController.executeCheckout for POST /api/v1/orders (Customer).
    * POST /api/v1/orders
    */
-  static createOrder = asyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user!.id;
-    const input = createOrderSchema.parse(req.body);
-    const order = await OrderService.createOrder(userId, input);
-
-    return ApiResponse.success(res, 'Order created successfully', order, 201);
-  });
+  static createOrder = CheckoutController.executeCheckout;
 
   /**
    * Retrieves customer order history (Customer).

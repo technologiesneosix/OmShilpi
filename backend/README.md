@@ -30,42 +30,50 @@ backend/
 │   │   ├── env.ts
 │   │   ├── logger.ts
 │   │   └── prisma.ts
-│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection, Product, Inventory, Media)
+│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection, Product, Inventory, Media, Cart, Wishlist)
 │   │   ├── auth.controller.ts
+│   │   ├── cart.controller.ts
 │   │   ├── category.controller.ts
 │   │   ├── collection.controller.ts
 │   │   ├── health.controller.ts
 │   │   ├── inventory.controller.ts
 │   │   ├── media.controller.ts
-│   │   └── product.controller.ts
+│   │   ├── product.controller.ts
+│   │   └── wishlist.controller.ts
 │   ├── middleware/         # Application middleware (Auth, Error, Upload, 404, RateLimiter, Validation)
 │   │   ├── auth.middleware.ts
 │   │   ├── upload.middleware.ts
 │   │   └── ...
 │   ├── routes/             # Centralized route definitions
 │   │   ├── auth.routes.ts
+│   │   ├── cart.routes.ts
 │   │   ├── category.routes.ts
 │   │   ├── collection.routes.ts
 │   │   ├── health.routes.ts
 │   │   ├── inventory.routes.ts
 │   │   ├── media.routes.ts
 │   │   ├── product.routes.ts
+│   │   ├── wishlist.routes.ts
 │   │   └── index.ts
 │   ├── services/           # Business logic services
 │   │   ├── auth.service.ts
+│   │   ├── cart.service.ts
 │   │   ├── category.service.ts
 │   │   ├── collection.service.ts
 │   │   ├── inventory.service.ts
 │   │   ├── media.service.ts
-│   │   └── product.service.ts
+│   │   ├── product.service.ts
+│   │   └── wishlist.service.ts
 │   ├── utils/              # API Error, Response, Password, Token & Pagination utilities
 │   ├── validators/         # Zod schemas
 │   │   ├── auth.validator.ts
+│   │   ├── cart.validator.ts
 │   │   ├── category.validator.ts
 │   │   ├── collection.validator.ts
 │   │   ├── inventory.validator.ts
 │   │   ├── media.validator.ts
-│   │   └── product.validator.ts
+│   │   ├── product.validator.ts
+│   │   └── wishlist.validator.ts
 │   ├── types/              # Shared TypeScript types & Express request context
 │   ├── app.ts              # Express application setup
 │   └── server.ts           # Server entry point & graceful shutdown
@@ -80,31 +88,34 @@ backend/
 
 ---
 
-## 🖼️ Media & Image Management Architecture (Phase B10)
+## 🛒 Cart & Wishlist Architecture (Phase B11)
 
-### 1. Cloud Storage & Metadata Separation
-- Actual image files are uploaded directly to **Cloudinary** (`om-shilpi/products`).
-- MySQL `ProductImage` table stores metadata (`id`, `productId`, `url`, `publicId`, `altText`, `sortOrder`, `isPrimary`, `createdAt`).
+### 1. Authoritative Backend Pricing & Calculations
+- Subtotal and item totals are computed dynamically using current database `Product.price`. Frontend prices passed in request bodies are ignored.
+- **No Stock Deduction / Reservation at Cart Level:** Adding products to the cart checks real-time inventory availability (`IN_STOCK`, `LOW_STOCK`, `OUT_OF_STOCK`, `UNAVAILABLE`) but DOES NOT alter inventory stock. Stock deduction occurs at checkout/orders.
 
-### 2. File Validation & Limits
-- **Max File Size:** 10 MB per image (`FILE_TOO_LARGE`).
-- **Allowed Formats:** `image/jpeg`, `image/jpg`, `image/png`, `image/webp`, `image/avif` (`INVALID_IMAGE_TYPE`).
-- **Max Images per Product:** 10 images limit (`IMAGE_LIMIT_REACHED`).
+### 2. Atomic Concurrency & Ownership Security
+- Upserting cart items uses `$transaction` blocks to prevent lost-update race conditions.
+- Strict per-customer isolation: Customers can only view, update, or clear their own cart/wishlist (`404 CART_ITEM_NOT_FOUND` / `404 WISHLIST_ITEM_NOT_FOUND` on cross-customer item manipulation).
 
-### 3. Primary Image Atomicity
-- Each product has at most ONE primary image (`isPrimary = true`). Primary switches execute inside Prisma `$transaction` blocks.
-- Deleting a primary image automatically promotes the next available image to primary.
+### 3. Business Limits
+- **Max Quantity per Cart Item:** 10 units (`CART_ITEM_LIMIT_EXCEEDED`).
+- **Max Distinct Items per Cart:** 50 distinct products.
+- **Max Wishlist Items:** 100 products.
 
 ---
 
-## ⚙️ Media API Endpoints
+## ⚙️ Cart & Wishlist API Endpoints
 
 | Endpoint | Method | Access | Description |
 |---|---|---|---|
-| `/api/v1/admin/products/:productId/images` | `POST` | Admin | Upload product image file (`multipart/form-data`) |
-| `/api/v1/admin/products/:productId/images` | `GET` | Admin | List all product images sorted by sort order |
-| `/api/v1/admin/products/:productId/images/:imageId/primary` | `PATCH` | Admin | Atomically set primary image |
-| `/api/v1/admin/products/:productId/images/reorder` | `PATCH` | Admin | Reorder product images (`imageIds: string[]`) |
-| `/api/v1/admin/products/:productId/images/:imageId` | `PATCH` | Admin | Update image metadata (`altText`, `sortOrder`) |
-| `/api/v1/admin/products/:productId/images/:imageId/replace` | `PUT` | Admin | Replace image file asset |
-| `/api/v1/admin/products/:productId/images/:imageId` | `DELETE` | Admin | Delete product image & Cloudinary asset |
+| `/api/v1/cart` | `GET` | Customer | Get customer's cart with calculated subtotal, item totals & availability |
+| `/api/v1/cart/count` | `GET` | Customer | Lightweight total item quantity count in customer's cart |
+| `/api/v1/cart/items` | `POST` | Customer | Add item to cart or increment quantity |
+| `/api/v1/cart/items/:itemId` | `PATCH` | Customer | Update quantity of a cart item |
+| `/api/v1/cart/items/:itemId` | `DELETE` | Customer | Remove a single item from cart |
+| `/api/v1/cart` | `DELETE` | Customer | Clear all items from customer's cart |
+| `/api/v1/wishlist` | `GET` | Customer | Get customer's wishlist with product details & availability |
+| `/api/v1/wishlist/count` | `GET` | Customer | Get total item count in customer's wishlist |
+| `/api/v1/wishlist/items` | `POST` | Customer | Add product to wishlist (prevents duplicates) |
+| `/api/v1/wishlist/items/:itemId` | `DELETE` | Customer | Remove item from customer's wishlist |

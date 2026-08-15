@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
+import { z } from 'zod';
 import { ApiError } from '../utils/apiError';
 import { ApiResponse } from '../utils/apiResponse';
 import { logger } from '../config/logger';
@@ -21,6 +22,14 @@ export const errorHandler = (
     message = err.message;
     errorCode = err.errorCode;
     details = err.details;
+  } else if (err instanceof z.ZodError) {
+    statusCode = 400;
+    errorCode = 'VALIDATION_ERROR';
+    message = 'Validation failed';
+    details = err.errors.map((e) => ({
+      field: e.path.join('.'),
+      message: e.message,
+    }));
   } else if (err instanceof Prisma.PrismaClientKnownRequestError) {
     // Map known Prisma errors to safe user-friendly application errors
     switch (err.code) {

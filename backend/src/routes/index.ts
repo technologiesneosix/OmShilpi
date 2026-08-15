@@ -6,6 +6,8 @@ import { collectionPublicRoutes, collectionAdminRoutes } from './collection.rout
 import { productPublicRoutes, productAdminRoutes } from './product.routes';
 import { inventoryAdminRoutes } from './inventory.routes';
 import mediaAdminRoutes from './media.routes';
+import cartRoutes from './cart.routes';
+import wishlistRoutes from './wishlist.routes';
 
 const v1Router = Router();
 
@@ -20,6 +22,8 @@ v1Router.use('/products', productPublicRoutes);
 v1Router.use('/admin/products', productAdminRoutes);
 v1Router.use('/admin/inventory', inventoryAdminRoutes);
 v1Router.use('/admin/products', mediaAdminRoutes);
+v1Router.use('/cart', cartRoutes);
+v1Router.use('/wishlist', wishlistRoutes);
 
 /*
  * Future modules to be registered here in later phases:

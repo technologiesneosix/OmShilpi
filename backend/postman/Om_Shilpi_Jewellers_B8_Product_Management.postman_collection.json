@@ -14,56 +14,91 @@
   ],
   "item": [
     {
-      "name": "Public Catalog",
+      "name": "Public",
       "item": [
         {
-          "name": "List Active Products (Filtered & Paginated)",
+          "name": "List Products",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
-            "url": {
-              "raw": "{{baseUrl}}/api/v1/products?search=Gold&minPrice=10000&maxPrice=100000&page=1&limit=20&sortBy=createdAt&sortOrder=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "products"],
-              "query": [
-                { "key": "search", "value": "Gold" },
-                { "key": "minPrice", "value": "10000" },
-                { "key": "maxPrice", "value": "100000" },
-                { "key": "page", "value": "1" },
-                { "key": "limit", "value": "20" },
-                { "key": "sortBy", "value": "createdAt" },
-                { "key": "sortOrder", "value": "desc" }
-              ]
-            }
+            "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
           }
         },
         {
-          "name": "Get Product by Slug",
+          "name": "Product Detail",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
-            "url": { "raw": "{{baseUrl}}/api/v1/products/classic-gold-necklace", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "classic-gold-necklace"] }
+            "url": { "raw": "{{baseUrl}}/api/v1/products/b8-test-gold-necklace", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "b8-test-gold-necklace"] }
+          }
+        },
+        {
+          "name": "Search",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?search=gold", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        },
+        {
+          "name": "Category Filter",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?category=gold-jewellery", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        },
+        {
+          "name": "Collection Filter",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?collection=bridal-collection", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        },
+        {
+          "name": "Featured",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?featured=true", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        },
+        {
+          "name": "New Arrivals",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?newArrival=true", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        },
+        {
+          "name": "Price Filter",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?minPrice=50000&maxPrice=100000", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
           }
         }
       ]
     },
     {
-      "name": "Admin Management",
+      "name": "Admin",
       "item": [
         {
-          "name": "Create Product",
+          "name": "Create",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Classic Gold Necklace\",\n  \"sku\": \"OSJ-GN-001\",\n  \"price\": 85000.00,\n  \"compareAtPrice\": 95000.00,\n  \"metal\": \"Gold\",\n  \"purity\": \"22K\",\n  \"grossWeight\": 12.5,\n  \"isFeatured\": true,\n  \"isNewArrival\": true,\n  \"isActive\": true\n}"
+              "raw": "{\n  \"name\": \"B8 Test Gold Necklace\",\n  \"slug\": \"b8-test-gold-necklace\",\n  \"sku\": \"OSJ-B8-GN-001\",\n  \"description\": \"B8 test jewellery product\",\n  \"price\": 85000.00,\n  \"metal\": \"Gold\",\n  \"purity\": \"22K\",\n  \"grossWeight\": 12.5,\n  \"isFeatured\": true\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
           }
         },
         {
-          "name": "List Products (Admin)",
+          "name": "List",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
@@ -71,7 +106,7 @@
           }
         },
         {
-          "name": "Get Product by ID (Admin)",
+          "name": "Detail",
           "request": {
             "method": "GET",
             "header": [{ "key": "Accept", "value": "application/json" }],
@@ -79,22 +114,38 @@
           }
         },
         {
-          "name": "Update Product",
+          "name": "Update",
           "request": {
             "method": "PATCH",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"price\": 89000.00,\n  \"shortDescription\": \"Updated short description\"\n}"
+              "raw": "{\n  \"price\": 89000.00,\n  \"description\": \"Updated description\"\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/products/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products", ":id"] }
           }
         },
         {
-          "name": "Delete or Soft Deactivate Product",
+          "name": "Deactivate",
           "request": {
-            "method": "DELETE",
-            "header": [],
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products", ":id"] }
+          }
+        },
+        {
+          "name": "Reactivate",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/products/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products", ":id"] }
           }
         }
@@ -128,6 +179,30 @@
           }
         },
         {
+          "name": "Admin Allowed (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin Product\",\n  \"sku\": \"OSJ-ADM-001\",\n  \"price\": 5000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Super Admin Allowed (201)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Super Admin Product\",\n  \"sku\": \"OSJ-SUP-001\",\n  \"price\": 5000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
           "name": "Unauthenticated Forbidden (401)",
           "request": {
             "method": "GET",
@@ -141,35 +216,99 @@
       "name": "Validation",
       "item": [
         {
-          "name": "Duplicate SKU Conflict (409)",
+          "name": "Duplicate SKU (409)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Duplicate SKU Product\",\n  \"sku\": \"OSJ-GN-001\",\n  \"price\": 10000\n}"
+              "raw": "{\n  \"name\": \"Duplicate SKU\",\n  \"sku\": \"OSJ-B8-GN-001\",\n  \"price\": 1000\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
           }
         },
         {
-          "name": "Duplicate Slug Conflict (409)",
+          "name": "Duplicate Slug (409)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Classic Gold Necklace\",\n  \"slug\": \"classic-gold-necklace\",\n  \"sku\": \"OSJ-GN-003\",\n  \"price\": 10000\n}"
+              "raw": "{\n  \"name\": \"Duplicate Slug\",\n  \"slug\": \"b8-test-gold-necklace\",\n  \"sku\": \"OSJ-B8-GN-999\",\n  \"price\": 1000\n}"
             },
             "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
           }
         },
         {
-          "name": "Invalid Sort Field (400)",
+          "name": "Invalid Category (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Invalid Cat\",\n  \"sku\": \"OSJ-INV-CAT\",\n  \"price\": 1000,\n  \"categoryId\": \"non-existent-cat-id\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Invalid Collection (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Invalid Col\",\n  \"sku\": \"OSJ-INV-COL\",\n  \"price\": 1000,\n  \"collectionId\": \"non-existent-col-id\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Invalid Price (400)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Negative Price\",\n  \"sku\": \"OSJ-NEG-PRICE\",\n  \"price\": -100\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Invalid Pagination (200 Clamped)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?page=-1&limit=99999", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        },
+        {
+          "name": "Invalid Sort (400)",
           "request": {
             "method": "GET",
             "header": [],
             "url": { "raw": "{{baseUrl}}/api/v1/admin/products?sortBy=passwordHash", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Unknown Fields (Stripped)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Malicious Product\",\n  \"sku\": \"OSJ-MAL-001\",\n  \"price\": 1000.00,\n  \"passwordHash\": \"malicious\",\n  \"role\": \"SUPER_ADMIN\",\n  \"stock\": 999999\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "SQL Injection Input (Sanitized)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/products?search=' OR '1'='1", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
           }
         }
       ]
@@ -178,11 +317,19 @@
       "name": "Regression",
       "item": [
         {
-          "name": "B2 Health Check",
+          "name": "B2 Health",
           "request": {
             "method": "GET",
             "header": [],
             "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "B5 Auth Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "auth", "me"] }
           }
         },
         {

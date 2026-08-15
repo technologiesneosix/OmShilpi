@@ -153,13 +153,22 @@ export class ProductService {
 
     // Price range filters
     if (query.minPrice || query.maxPrice) {
+      const minP = query.minPrice ? parseFloat(query.minPrice) : undefined;
+      const maxP = query.maxPrice ? parseFloat(query.maxPrice) : undefined;
+
+      if (minP !== undefined && (isNaN(minP) || minP < 0)) {
+        throw ApiError.badRequest('minPrice must be a non-negative number', 'VALIDATION_ERROR');
+      }
+      if (maxP !== undefined && (isNaN(maxP) || maxP < 0)) {
+        throw ApiError.badRequest('maxPrice must be a non-negative number', 'VALIDATION_ERROR');
+      }
+      if (minP !== undefined && maxP !== undefined && minP > maxP) {
+        throw ApiError.badRequest('minPrice cannot be greater than maxPrice', 'VALIDATION_ERROR');
+      }
+
       where.price = {};
-      if (query.minPrice && !isNaN(parseFloat(query.minPrice))) {
-        where.price.gte = new Prisma.Decimal(query.minPrice);
-      }
-      if (query.maxPrice && !isNaN(parseFloat(query.maxPrice))) {
-        where.price.lte = new Prisma.Decimal(query.maxPrice);
-      }
+      if (minP !== undefined) where.price.gte = new Prisma.Decimal(query.minPrice!);
+      if (maxP !== undefined) where.price.lte = new Prisma.Decimal(query.maxPrice!);
     }
 
     // Search filter

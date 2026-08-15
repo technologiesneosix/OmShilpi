@@ -8,6 +8,8 @@ import { inventoryAdminRoutes } from './inventory.routes';
 import mediaAdminRoutes from './media.routes';
 import cartRoutes from './cart.routes';
 import wishlistRoutes from './wishlist.routes';
+import addressRoutes from './address.routes';
+import { checkoutRouter, orderCustomerRouter, orderAdminRouter } from './order.routes';
 
 const v1Router = Router();
 
@@ -24,6 +26,10 @@ v1Router.use('/admin/inventory', inventoryAdminRoutes);
 v1Router.use('/admin/products', mediaAdminRoutes);
 v1Router.use('/cart', cartRoutes);
 v1Router.use('/wishlist', wishlistRoutes);
+v1Router.use('/addresses', addressRoutes);
+v1Router.use('/checkout', checkoutRouter);
+v1Router.use('/orders', orderCustomerRouter);
+v1Router.use('/admin/orders', orderAdminRouter);
 
 /*
  * Future modules to be registered here in later phases:

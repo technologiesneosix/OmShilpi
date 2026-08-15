@@ -425,6 +425,16 @@ model Payment {
   @@index([status])
 }
 
+model PaymentWebhookEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  eventType   String
+  processedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([eventId])
+}
+
 // ===================================================
 // ENQUIRY, BANNER, TESTIMONIAL & CONTENT MODELS
 // ===================================================

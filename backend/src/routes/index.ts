@@ -11,6 +11,7 @@ import wishlistRoutes from './wishlist.routes';
 import addressRoutes from './address.routes';
 import checkoutRoutes from './checkout.routes';
 import { orderCustomerRouter, orderAdminRouter } from './order.routes';
+import paymentRoutes from './payment.routes';
 
 const v1Router = Router();
 
@@ -31,6 +32,7 @@ v1Router.use('/addresses', addressRoutes);
 v1Router.use('/checkout', checkoutRoutes);
 v1Router.use('/orders', orderCustomerRouter);
 v1Router.use('/admin/orders', orderAdminRouter);
+v1Router.use('/payments', paymentRoutes);
 
 /*
  * Future modules to be registered here in later phases:

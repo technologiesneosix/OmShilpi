@@ -32,6 +32,9 @@ app.use(
 // Cookie parsing middleware
 app.use(cookieParser(env.COOKIE_SECRET));
 
+// Raw body parsing for Razorpay Webhook endpoint BEFORE general JSON parser
+app.use('/api/v1/payments/webhook/razorpay', express.raw({ type: 'application/json' }));
+
 // Request parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));

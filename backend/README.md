@@ -138,3 +138,31 @@ backend/
 | `/api/v1/orders/:id/cancel` | `PATCH` | Customer | Cancel order (restores stock) |
 | `/api/v1/admin/orders` | `GET` | Admin / Staff | Admin list all orders (paginated, filters) |
 | `/api/v1/admin/orders/:id/status` | `PATCH` | Admin / Staff | Admin update order status |
+
+---
+
+## 💳 Razorpay Payment Gateway Architecture (Phase B13)
+
+### 1. Razorpay Order Creation
+- `POST /api/v1/payments/create-order` creates an external Razorpay Order for an existing internal `PENDING` Order.
+- Converts `Order.total` in rupees to paise (`Math.round(total * 100)`). Frontend submitted amounts/currencies are completely ignored.
+- Reuses existing pending Razorpay Order if valid, avoiding duplicate provider order creation.
+
+### 2. Server-Side HMAC-SHA256 Signature Verification
+- `POST /api/v1/payments/verify` verifies `expectedRazorpayOrderId + '|' + razorpay_payment_id` against `razorpay_signature` using `RAZORPAY_KEY_SECRET` with timing-safe comparison.
+- On valid signature, transactionally updates `Payment.status = PAID`, `Order.paymentStatus = PAID`, and `Order.status = CONFIRMED`.
+
+### 3. Webhook Raw-Body Handler & Idempotency Protection
+- `POST /api/v1/payments/webhook/razorpay` receives the raw unparsed `Buffer` request body via `express.raw({ type: 'application/json' })` to verify `X-Razorpay-Signature` against `RAZORPAY_WEBHOOK_SECRET`.
+- Event idempotency: Stores `X-Razorpay-Event-Id` in `PaymentWebhookEvent` table to prevent duplicate webhook processing or double order state updates.
+
+---
+
+## ⚙️ Payment API Endpoints
+
+| Endpoint | Method | Access | Description |
+|---|---|---|---|
+| `/api/v1/payments/create-order` | `POST` | Customer | Create or retrieve Razorpay Order for internal Order |
+| `/api/v1/payments/verify` | `POST` | Customer | Verify Razorpay payment signature server-side |
+| `/api/v1/payments/webhook/razorpay` | `POST` | Public | Razorpay Webhook endpoint (Raw body signature & idempotency) |
+

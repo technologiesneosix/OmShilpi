@@ -248,16 +248,36 @@ model ProductImage {
 }
 
 model Inventory {
-  id                String   @id @default(cuid())
-  productId         String   @unique
-  quantity          Int      @default(0)
-  lowStockThreshold Int      @default(5)
-  updatedAt         DateTime @updatedAt
+  id                String                 @id @default(cuid())
+  productId         String                 @unique
+  quantity          Int                    @default(0)
+  lowStockThreshold Int                    @default(5)
+  updatedAt         DateTime               @updatedAt
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product      Product                @relation(fields: [productId], references: [id], onDelete: Cascade)
+  transactions InventoryTransaction[]
 
   @@index([quantity])
 }
+
+model InventoryTransaction {
+  id             String   @id @default(cuid())
+  inventoryId    String
+  productId      String
+  change         Int
+  quantityBefore Int
+  quantityAfter  Int
+  reason         String
+  createdBy      String?
+  createdAt      DateTime @default(now())
+
+  inventory Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryId])
+  @@index([productId])
+  @@index([createdAt])
+}
+
 
 // ===================================================
 // CART & WISHLIST MODELS

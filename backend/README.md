@@ -25,11 +25,12 @@ Production-level backend platform for **Om Shilpi Jewellers** e-commerce applica
 backend/
 ├── src/
 │   ├── config/             # Environment, Winston logger & Prisma client
-│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection, Product)
+│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection, Product, Inventory)
 │   │   ├── auth.controller.ts
 │   │   ├── category.controller.ts
 │   │   ├── collection.controller.ts
 │   │   ├── health.controller.ts
+│   │   ├── inventory.controller.ts
 │   │   └── product.controller.ts
 │   ├── middleware/         # Application middleware (Auth, Error, 404, RateLimiter, Validation)
 │   ├── routes/             # Centralized route definitions
@@ -37,18 +38,21 @@ backend/
 │   │   ├── category.routes.ts
 │   │   ├── collection.routes.ts
 │   │   ├── health.routes.ts
+│   │   ├── inventory.routes.ts
 │   │   ├── product.routes.ts
 │   │   └── index.ts
-│   ├── services/           # Business logic services (Auth, Category, Collection, Product)
+│   ├── services/           # Business logic services (Auth, Category, Collection, Product, Inventory)
 │   │   ├── auth.service.ts
 │   │   ├── category.service.ts
 │   │   ├── collection.service.ts
+│   │   ├── inventory.service.ts
 │   │   └── product.service.ts
 │   ├── utils/              # API Error, Response, Password, Token & Pagination utilities
-│   ├── validators/         # Zod schemas (Auth, Category, Collection, Product)
+│   ├── validators/         # Zod schemas (Auth, Category, Collection, Product, Inventory)
 │   │   ├── auth.validator.ts
 │   │   ├── category.validator.ts
 │   │   ├── collection.validator.ts
+│   │   ├── inventory.validator.ts
 │   │   └── product.validator.ts
 │   ├── types/              # Shared TypeScript types & Express request context
 │   ├── app.ts              # Express application setup
@@ -64,34 +68,31 @@ backend/
 
 ---
 
-## 💎 Product Management Architecture (Phase B8)
+## 📦 Inventory & Stock Management Architecture (Phase B9)
 
-### 1. Public vs Admin Access & Catalog Filtering
-- **Public Endpoints (`/api/v1/products`):** Accessible without authentication. Returns **only** active products (`isActive = true`). Supports query parameters: `page`, `limit`, `search`, `category` (slug), `categoryId`, `collection` (slug), `collectionId`, `featured` (`true`), `newArrival` (`true`), `minPrice`, `maxPrice`, `sortBy`, `sortOrder`.
-- **Admin Endpoints (`/api/v1/admin/products`):** Strictly protected by `requireAuth` and `requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN)`. `CUSTOMER` and `STAFF` users receive `403 Forbidden`.
+### 1. Atomic Stock Adjustments & Concurrency Safeguards
+- All stock mutations (`PATCH /api/v1/admin/inventory/:productId/adjust` and `PATCH /api/v1/admin/inventory/:productId/stock`) execute inside Prisma `$transaction` blocks.
+- **Negative Stock Prevention:** If an adjustment attempt would result in `quantity < 0`, the transaction fails safely returning `400 Bad Request` (`INSUFFICIENT_STOCK`).
 
-### 2. Monetary Precision & Specifications
-- Prices are stored and processed with exact Decimal precision (`@db.Decimal(12, 2)`).
-- Jewellery specifications supported: `metal`, `purity`, `grossWeight`, `netWeight`, `stoneType`, `stoneWeight`, `certification`.
+### 2. Inventory Movement Traceability & Audit History
+- Every stock change creates an immutable `InventoryTransaction` record documenting `inventoryId`, `productId`, `change`, `quantityBefore`, `quantityAfter`, `reason` (e.g. `INITIAL_STOCK`, `NEW_STOCK`, `PHYSICAL_AUDIT`, `DAMAGED_ITEM`), and admin `createdBy`.
+- Accessible via `GET /api/v1/admin/inventory/:productId/history`.
 
-### 3. SKU & Slug Collision Prevention
-- SKUs are unique strings (e.g. `OSJ-GN-001`). Duplicate SKU attempts return `409 Conflict` (`PRODUCT_SKU_EXISTS`).
-- Slugs are auto-generated from product names if omitted. Duplicate slug attempts return `409 Conflict` (`PRODUCT_SLUG_EXISTS`).
-
-### 4. Domain Boundaries
-- **Inventory Management:** Stock levels and low-stock alerts are handled in Phase B9 (`/api/v1/inventory`).
-- **Product Images:** Actual file upload infrastructure is handled in Phase B10.
+### 3. Public Availability Indicator
+- Public product responses expose an availability state (`IN_STOCK`, `LOW_STOCK`, `OUT_OF_STOCK`) without exposing raw internal stock quantity numbers or threshold settings.
 
 ---
 
-## ⚙️ Product API Endpoints
+## ⚙️ Inventory API Endpoints
 
 | Endpoint | Method | Access | Description |
 |---|---|---|---|
-| `/api/v1/products` | `GET` | Public | List active products (supports category, collection, price range, featured & search filters) |
-| `/api/v1/products/:slug` | `GET` | Public | Get active product details by slug |
-| `/api/v1/admin/products` | `POST` | Admin | Create a new product |
-| `/api/v1/admin/products` | `GET` | Admin | List all products (with status filter, pagination, search & whitelisted sorting) |
-| `/api/v1/admin/products/:id` | `GET` | Admin | Get full administrative product details by ID |
-| `/api/v1/admin/products/:id` | `PATCH` | Admin | Update product details |
-| `/api/v1/admin/products/:id` | `DELETE` | Admin | Delete or soft-deactivate product |
+| `/api/v1/admin/inventory` | `POST` | Admin | Create initial inventory record for a product |
+| `/api/v1/admin/inventory` | `GET` | Admin | List all inventory records (supports status filter: `in_stock`, `low_stock`, `out_of_stock`, search & pagination) |
+| `/api/v1/admin/inventory/low-stock` | `GET` | Admin | Get products with low stock (`0 < quantity <= lowStockThreshold`) |
+| `/api/v1/admin/inventory/out-of-stock` | `GET` | Admin | Get out-of-stock products (`quantity = 0`) |
+| `/api/v1/admin/inventory/:productId` | `GET` | Admin | Get inventory details & computed availability by product ID |
+| `/api/v1/admin/inventory/:productId` | `PATCH` | Admin | Update low stock threshold configuration |
+| `/api/v1/admin/inventory/:productId/adjust` | `PATCH` | Admin | Atomically adjust stock (+N or -N) with audit log & negative stock check |
+| `/api/v1/admin/inventory/:productId/stock` | `PATCH` | Admin | Atomically set stock to exact quantity with audit log |
+| `/api/v1/admin/inventory/:productId/history` | `GET` | Admin | Get paginated inventory audit transaction history |

@@ -1,0 +1,238 @@
+{
+  "info": {
+    "_postman_id": "b9-inventory-management-om-shilpi",
+    "name": "Om Shilpi Jewellers — B9 Inventory Management",
+    "description": "Comprehensive Postman test collection for Phase B9 Inventory Management (Stock Tracking, Atomic Adjustments, Low/Out of Stock Monitoring, Audit History & Public Availability)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Admin Management",
+      "item": [
+        {
+          "name": "Create Inventory",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 10,\n  \"lowStockThreshold\": 3\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory"] }
+          }
+        },
+        {
+          "name": "List Inventory",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory?page=1&limit=10&status=all", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory"] }
+          }
+        },
+        {
+          "name": "Get Low Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/low-stock?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", "low-stock"] }
+          }
+        },
+        {
+          "name": "Get Out of Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/out-of-stock?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", "out-of-stock"] }
+          }
+        },
+        {
+          "name": "Get Inventory by Product ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId"] }
+          }
+        },
+        {
+          "name": "Update Low Stock Threshold Config",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lowStockThreshold\": 5\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId"] }
+          }
+        },
+        {
+          "name": "Atomic Stock Adjustment (+N / -N)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"change\": 5,\n  \"reason\": \"New stock received from showroom\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId/adjust", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId", "adjust"] }
+          }
+        },
+        {
+          "name": "Set Exact Stock",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 20,\n  \"reason\": \"Physical stock audit correction\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId/stock", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId", "stock"] }
+          }
+        },
+        {
+          "name": "Get Inventory History Audit Log",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId/history?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId", "history"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Availability",
+      "item": [
+        {
+          "name": "Get Public Product Detail Availability",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products/b8-test-gold-necklace", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "b8-test-gold-necklace"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Customer Forbidden (403)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"change\": 10,\n  \"reason\": \"Unauthorized\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId/adjust", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId", "adjust"] }
+          }
+        },
+        {
+          "name": "Staff Forbidden (403)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"change\": 10,\n  \"reason\": \"Unauthorized\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId/adjust", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId", "adjust"] }
+          }
+        },
+        {
+          "name": "Unauthenticated Forbidden (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation",
+      "item": [
+        {
+          "name": "Duplicate Inventory Conflict (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory"] }
+          }
+        },
+        {
+          "name": "Nonexistent Product (404)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"non-existent-prod-id\",\n  \"quantity\": 10\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory"] }
+          }
+        },
+        {
+          "name": "Insufficient Stock Prevention (400)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"change\": -9999,\n  \"reason\": \"Over-deduction attempt\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/inventory/:productId/adjust", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "inventory", ":productId", "adjust"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regression",
+      "item": [
+        {
+          "name": "B2 Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "B6 Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories"] }
+          }
+        },
+        {
+          "name": "B7 Collections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/collections", "host": ["{{baseUrl}}"], "path": ["api", "v1", "collections"] }
+          }
+        },
+        {
+          "name": "B8 Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products"] }
+          }
+        }
+      ]
+    }
+  ]
+}

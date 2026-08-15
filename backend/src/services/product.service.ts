@@ -118,10 +118,7 @@ export class ProductService {
   /**
    * Retrieves active products for public catalog browsing with search, filtering, and whitelisted sorting.
    */
-  static async getPublicProducts(query: PublicProductQueryInput): Promise<{
-    products: Product[];
-    meta: PaginationMeta;
-  }> {
+  static async getPublicProducts(query: PublicProductQueryInput) {
     const { page, limit, skip, take } = parsePagination(query);
 
     // Public catalog strictly exposes active products
@@ -200,19 +197,33 @@ export class ProductService {
             select: { id: true, url: true, altText: true, isPrimary: true, sortOrder: true },
             orderBy: { sortOrder: 'asc' },
           },
+          inventory: {
+            select: { quantity: true, lowStockThreshold: true },
+          },
         },
       }),
     ]);
 
+    const formattedProducts = products.map((prod) => {
+      const { inventory, ...rest } = prod;
+      const quantity = inventory?.quantity ?? 0;
+      const threshold = inventory?.lowStockThreshold ?? 5;
+      const availability = quantity <= 0 ? 'OUT_OF_STOCK' : quantity <= threshold ? 'LOW_STOCK' : 'IN_STOCK';
+      return {
+        ...rest,
+        availability,
+      };
+    });
+
     const meta = buildPaginationMeta(total, page, limit);
 
-    return { products, meta };
+    return { products: formattedProducts, meta };
   }
 
   /**
-   * Retrieves a single active product by slug for public browsing.
+   * Retrieves a single active product by slug for public browsing with availability state.
    */
-  static async getPublicProductBySlug(slug: string): Promise<Product> {
+  static async getPublicProductBySlug(slug: string) {
     const product = await prisma.product.findFirst({
       where: {
         slug: slug.toLowerCase().trim(),
@@ -225,6 +236,9 @@ export class ProductService {
           select: { id: true, url: true, altText: true, isPrimary: true, sortOrder: true },
           orderBy: { sortOrder: 'asc' },
         },
+        inventory: {
+          select: { quantity: true, lowStockThreshold: true },
+        },
       },
     });
 
@@ -232,7 +246,15 @@ export class ProductService {
       throw ApiError.notFound(`Product with slug '${slug}' not found`, 'PRODUCT_NOT_FOUND');
     }
 
-    return product;
+    const { inventory, ...rest } = product;
+    const quantity = inventory?.quantity ?? 0;
+    const threshold = inventory?.lowStockThreshold ?? 5;
+    const availability = quantity <= 0 ? 'OUT_OF_STOCK' : quantity <= threshold ? 'LOW_STOCK' : 'IN_STOCK';
+
+    return {
+      ...rest,
+      availability,
+    };
   }
 
   /**

@@ -25,23 +25,27 @@ Production-level backend platform for **Om Shilpi Jewellers** e-commerce applica
 backend/
 ├── src/
 │   ├── config/             # Environment, Winston logger & Prisma client
-│   ├── controllers/        # Express route controllers (Auth, Health, Category)
+│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection)
 │   │   ├── auth.controller.ts
 │   │   ├── category.controller.ts
+│   │   ├── collection.controller.ts
 │   │   └── health.controller.ts
 │   ├── middleware/         # Application middleware (Auth, Error, 404, RateLimiter, Validation)
 │   ├── routes/             # Centralized route definitions
 │   │   ├── auth.routes.ts
 │   │   ├── category.routes.ts
+│   │   ├── collection.routes.ts
 │   │   ├── health.routes.ts
 │   │   └── index.ts
-│   ├── services/           # Business logic services (Auth, Category)
+│   ├── services/           # Business logic services (Auth, Category, Collection)
 │   │   ├── auth.service.ts
-│   │   └── category.service.ts
+│   │   ├── category.service.ts
+│   │   └── collection.service.ts
 │   ├── utils/              # API Error, Response, Password, Token & Pagination utilities
-│   ├── validators/         # Zod schemas (Auth, Category)
+│   ├── validators/         # Zod schemas (Auth, Category, Collection)
 │   │   ├── auth.validator.ts
-│   │   └── category.validator.ts
+│   │   ├── category.validator.ts
+│   │   └── collection.validator.ts
 │   ├── types/              # Shared TypeScript types & Express request context
 │   ├── app.ts              # Express application setup
 │   └── server.ts           # Server entry point & graceful shutdown
@@ -56,30 +60,27 @@ backend/
 
 ---
 
-## 💎 Category Management Architecture (Phase B6)
+## 💎 Business Domain Architecture
 
-### 1. Public vs Admin Access
-- **Public Endpoints (`/api/v1/categories`):** Accessible without authentication. Returns **only** active categories (`isActive = true`) ordered deterministically (`sortOrder asc`, `name asc`).
-- **Admin Endpoints (`/api/v1/admin/categories`):** Strictly protected by `requireAuth` and `requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN)`. `CUSTOMER` and `STAFF` users receive `403 Forbidden`.
+### Category vs Collection Distinction
+- **Category:** Functional classification of product type (e.g. *Gold Jewellery*, *Rings*, *Necklaces*).
+- **Collection:** Curated marketing / seasonal groupings (e.g. *Bridal Collection*, *Festive Wear*, *Daily Wear*, *New Arrivals*).
 
-### 2. Auto-Slug Generation & Uniqueness
-- Slugs are auto-generated from category names (`slugify`) if omitted, or normalized when provided.
-- Duplicate slug attempts return `409 Conflict` (`CATEGORY_SLUG_EXISTS`).
-
-### 3. Product Association & Deactivation Safety
-- Category deletion checks for associated products (`_count.products > 0`).
-- If products exist, the category is safely soft-deactivated (`isActive = false`) rather than deleted, preventing orphan data.
+### Collection Management Architecture (Phase B7)
+- **Public vs Admin Access:** Public endpoints (`/api/v1/collections`) return **only** active collections (`isActive = true`) ordered deterministically (`sortOrder asc`, `name asc`). Admin endpoints (`/api/v1/admin/collections`) require `ADMIN` or `SUPER_ADMIN` authorization. `CUSTOMER` and `STAFF` users receive `403 Forbidden`.
+- **Auto-Slug Generation & Uniqueness:** Slugs are auto-generated from collection names (`slugify`) if omitted, or normalized when provided. Duplicate slug attempts return `409 Conflict` (`COLLECTION_SLUG_EXISTS`).
+- **Product Association & Deactivation Safety:** Collection deletion checks for associated products (`_count.products > 0`). If products exist, the collection is soft-deactivated (`isActive = false`) rather than deleted, protecting referential integrity.
 
 ---
 
-## ⚙️ Category API Endpoints
+## ⚙️ Collection API Endpoints
 
 | Endpoint | Method | Access | Description |
 |---|---|---|---|
-| `/api/v1/categories` | `GET` | Public | List all active categories |
-| `/api/v1/categories/:slug` | `GET` | Public | Get active category details by slug |
-| `/api/v1/admin/categories` | `POST` | Admin | Create a new category |
-| `/api/v1/admin/categories` | `GET` | Admin | List all categories (with pagination, search, & status filter) |
-| `/api/v1/admin/categories/:id` | `GET` | Admin | Get category details by ID |
-| `/api/v1/admin/categories/:id` | `PATCH` | Admin | Update category details |
-| `/api/v1/admin/categories/:id` | `DELETE` | Admin | Delete category (or soft-deactivate if products exist) |
+| `/api/v1/collections` | `GET` | Public | List all active collections |
+| `/api/v1/collections/:slug` | `GET` | Public | Get active collection details by slug |
+| `/api/v1/admin/collections` | `POST` | Admin | Create a new collection |
+| `/api/v1/admin/collections` | `GET` | Admin | List all collections (with pagination, search, & status filter) |
+| `/api/v1/admin/collections/:id` | `GET` | Admin | Get collection details by ID |
+| `/api/v1/admin/collections/:id` | `PATCH` | Admin | Update collection details |
+| `/api/v1/admin/collections/:id` | `DELETE` | Admin | Delete collection (or soft-deactivate if products exist) |

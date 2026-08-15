@@ -153,7 +153,6 @@ export class InventoryService {
   static async getLowStockInventory(query: { page?: string; limit?: string }) {
     const { page, limit, skip, take } = parsePagination(query);
 
-    // Fetch items where quantity > 0
     const where: Prisma.InventoryWhereInput = {
       quantity: { gt: 0 },
     };
@@ -234,38 +233,49 @@ export class InventoryService {
   }
 
   /**
-   * Atomically adjusts inventory stock (+N or -N) with negative stock prevention.
+   * Atomically adjusts inventory stock (+N or -N) with MySQL row lock and negative stock prevention.
    */
   static async adjustStock(productId: string, input: AdjustStockInput, adminId?: string) {
     return prisma.$transaction(async (tx) => {
-      const inventory = await tx.inventory.findUnique({
-        where: { productId },
-      });
-      if (!inventory) {
-        throw ApiError.notFound(`Inventory for product ID '${productId}' not found`, 'INVENTORY_NOT_FOUND');
-      }
+      // Atomic MySQL update query with non-negative guard condition
+      const rowsAffected = await tx.$executeRaw`
+        UPDATE \`Inventory\`
+        SET \`quantity\` = \`quantity\` + ${input.change}, \`updatedAt\` = NOW(3)
+        WHERE \`productId\` = ${productId} AND (\`quantity\` + ${input.change}) >= 0
+      `;
 
-      const quantityBefore = inventory.quantity;
-      const quantityAfter = quantityBefore + input.change;
+      if (rowsAffected === 0) {
+        const existing = await tx.inventory.findUnique({
+          where: { productId },
+        });
 
-      if (quantityAfter < 0) {
+        if (!existing) {
+          throw ApiError.notFound(`Inventory for product ID '${productId}' not found`, 'INVENTORY_NOT_FOUND');
+        }
+
+        const quantityBefore = existing.quantity;
+        const attemptedAfter = quantityBefore + input.change;
+
         throw ApiError.badRequest(
-          `Insufficient stock. Current quantity is ${quantityBefore}, attempted adjustment of ${input.change} results in negative stock (${quantityAfter}).`,
+          `Insufficient stock. Current quantity is ${quantityBefore}, attempted adjustment of ${input.change} results in negative stock (${attemptedAfter}).`,
           'INSUFFICIENT_STOCK'
         );
       }
 
-      const updated = await tx.inventory.update({
+      // Fetch updated inventory record
+      const updated = await tx.inventory.findUniqueOrThrow({
         where: { productId },
-        data: { quantity: quantityAfter },
         include: {
           product: { select: { id: true, name: true, sku: true, slug: true } },
         },
       });
 
+      const quantityAfter = updated.quantity;
+      const quantityBefore = quantityAfter - input.change;
+
       await tx.inventoryTransaction.create({
         data: {
-          inventoryId: inventory.id,
+          inventoryId: updated.id,
           productId,
           change: input.change,
           quantityBefore,

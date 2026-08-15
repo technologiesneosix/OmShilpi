@@ -25,6 +25,12 @@ const envSchema = z.object({
   COOKIE_SECRET: z.string().default('omshilpi_cookie_secret_default'),
   COOKIE_SECURE: z.string().transform((val) => val === 'true').default('false'),
   COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
+
+  // Cloudinary Configuration (Optional for dev/test fallback)
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
+  CLOUDINARY_FOLDER: z.string().default('om-shilpi/products'),
 });
 
 const parseEnv = () => {

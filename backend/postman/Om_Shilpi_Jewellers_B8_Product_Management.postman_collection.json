@@ -1,0 +1,207 @@
+{
+  "info": {
+    "_postman_id": "b8-product-management-om-shilpi",
+    "name": "Om Shilpi Jewellers — B8 Product Management",
+    "description": "Comprehensive Postman test collection for Phase B8 Product Management (Base Catalog, Specifications, Decimal Pricing, Category/Collection relations & Filtering)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public Catalog",
+      "item": [
+        {
+          "name": "List Active Products (Filtered & Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products?search=Gold&minPrice=10000&maxPrice=100000&page=1&limit=20&sortBy=createdAt&sortOrder=desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                { "key": "search", "value": "Gold" },
+                { "key": "minPrice", "value": "10000" },
+                { "key": "maxPrice", "value": "100000" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "sortBy", "value": "createdAt" },
+                { "key": "sortOrder", "value": "desc" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by Slug",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/products/classic-gold-necklace", "host": ["{{baseUrl}}"], "path": ["api", "v1", "products", "classic-gold-necklace"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Management",
+      "item": [
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Classic Gold Necklace\",\n  \"sku\": \"OSJ-GN-001\",\n  \"price\": 85000.00,\n  \"compareAtPrice\": 95000.00,\n  \"metal\": \"Gold\",\n  \"purity\": \"22K\",\n  \"grossWeight\": 12.5,\n  \"isFeatured\": true,\n  \"isNewArrival\": true,\n  \"isActive\": true\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "List Products (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products?page=1&limit=10&status=all", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Get Product by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products", ":id"] }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 89000.00,\n  \"shortDescription\": \"Updated short description\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products", ":id"] }
+          }
+        },
+        {
+          "name": "Delete or Soft Deactivate Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products/:id", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Customer Forbidden (403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Product\",\n  \"sku\": \"TEST-001\",\n  \"price\": 1000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Staff Forbidden (403)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Product\",\n  \"sku\": \"TEST-001\",\n  \"price\": 1000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Unauthenticated Forbidden (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Validation",
+      "item": [
+        {
+          "name": "Duplicate SKU Conflict (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate SKU Product\",\n  \"sku\": \"OSJ-GN-001\",\n  \"price\": 10000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Duplicate Slug Conflict (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Classic Gold Necklace\",\n  \"slug\": \"classic-gold-necklace\",\n  \"sku\": \"OSJ-GN-003\",\n  \"price\": 10000\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        },
+        {
+          "name": "Invalid Sort Field (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/admin/products?sortBy=passwordHash", "host": ["{{baseUrl}}"], "path": ["api", "v1", "admin", "products"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Regression",
+      "item": [
+        {
+          "name": "B2 Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/health", "host": ["{{baseUrl}}"], "path": ["api", "v1", "health"] }
+          }
+        },
+        {
+          "name": "B6 Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/categories", "host": ["{{baseUrl}}"], "path": ["api", "v1", "categories"] }
+          }
+        },
+        {
+          "name": "B7 Collections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/collections", "host": ["{{baseUrl}}"], "path": ["api", "v1", "collections"] }
+          }
+        }
+      ]
+    }
+  ]
+}

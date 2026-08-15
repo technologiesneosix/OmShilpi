@@ -25,27 +25,31 @@ Production-level backend platform for **Om Shilpi Jewellers** e-commerce applica
 backend/
 ├── src/
 │   ├── config/             # Environment, Winston logger & Prisma client
-│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection)
+│   ├── controllers/        # Express route controllers (Auth, Health, Category, Collection, Product)
 │   │   ├── auth.controller.ts
 │   │   ├── category.controller.ts
 │   │   ├── collection.controller.ts
-│   │   └── health.controller.ts
+│   │   ├── health.controller.ts
+│   │   └── product.controller.ts
 │   ├── middleware/         # Application middleware (Auth, Error, 404, RateLimiter, Validation)
 │   ├── routes/             # Centralized route definitions
 │   │   ├── auth.routes.ts
 │   │   ├── category.routes.ts
 │   │   ├── collection.routes.ts
 │   │   ├── health.routes.ts
+│   │   ├── product.routes.ts
 │   │   └── index.ts
-│   ├── services/           # Business logic services (Auth, Category, Collection)
+│   ├── services/           # Business logic services (Auth, Category, Collection, Product)
 │   │   ├── auth.service.ts
 │   │   ├── category.service.ts
-│   │   └── collection.service.ts
+│   │   ├── collection.service.ts
+│   │   └── product.service.ts
 │   ├── utils/              # API Error, Response, Password, Token & Pagination utilities
-│   ├── validators/         # Zod schemas (Auth, Category, Collection)
+│   ├── validators/         # Zod schemas (Auth, Category, Collection, Product)
 │   │   ├── auth.validator.ts
 │   │   ├── category.validator.ts
-│   │   └── collection.validator.ts
+│   │   ├── collection.validator.ts
+│   │   └── product.validator.ts
 │   ├── types/              # Shared TypeScript types & Express request context
 │   ├── app.ts              # Express application setup
 │   └── server.ts           # Server entry point & graceful shutdown
@@ -60,27 +64,34 @@ backend/
 
 ---
 
-## 💎 Business Domain Architecture
+## 💎 Product Management Architecture (Phase B8)
 
-### Category vs Collection Distinction
-- **Category:** Functional classification of product type (e.g. *Gold Jewellery*, *Rings*, *Necklaces*).
-- **Collection:** Curated marketing / seasonal groupings (e.g. *Bridal Collection*, *Festive Wear*, *Daily Wear*, *New Arrivals*).
+### 1. Public vs Admin Access & Catalog Filtering
+- **Public Endpoints (`/api/v1/products`):** Accessible without authentication. Returns **only** active products (`isActive = true`). Supports query parameters: `page`, `limit`, `search`, `category` (slug), `categoryId`, `collection` (slug), `collectionId`, `featured` (`true`), `newArrival` (`true`), `minPrice`, `maxPrice`, `sortBy`, `sortOrder`.
+- **Admin Endpoints (`/api/v1/admin/products`):** Strictly protected by `requireAuth` and `requireRole(UserRole.ADMIN, UserRole.SUPER_ADMIN)`. `CUSTOMER` and `STAFF` users receive `403 Forbidden`.
 
-### Collection Management Architecture (Phase B7)
-- **Public vs Admin Access:** Public endpoints (`/api/v1/collections`) return **only** active collections (`isActive = true`) ordered deterministically (`sortOrder asc`, `name asc`). Admin endpoints (`/api/v1/admin/collections`) require `ADMIN` or `SUPER_ADMIN` authorization. `CUSTOMER` and `STAFF` users receive `403 Forbidden`.
-- **Auto-Slug Generation & Uniqueness:** Slugs are auto-generated from collection names (`slugify`) if omitted, or normalized when provided. Duplicate slug attempts return `409 Conflict` (`COLLECTION_SLUG_EXISTS`).
-- **Product Association & Deactivation Safety:** Collection deletion checks for associated products (`_count.products > 0`). If products exist, the collection is soft-deactivated (`isActive = false`) rather than deleted, protecting referential integrity.
+### 2. Monetary Precision & Specifications
+- Prices are stored and processed with exact Decimal precision (`@db.Decimal(12, 2)`).
+- Jewellery specifications supported: `metal`, `purity`, `grossWeight`, `netWeight`, `stoneType`, `stoneWeight`, `certification`.
+
+### 3. SKU & Slug Collision Prevention
+- SKUs are unique strings (e.g. `OSJ-GN-001`). Duplicate SKU attempts return `409 Conflict` (`PRODUCT_SKU_EXISTS`).
+- Slugs are auto-generated from product names if omitted. Duplicate slug attempts return `409 Conflict` (`PRODUCT_SLUG_EXISTS`).
+
+### 4. Domain Boundaries
+- **Inventory Management:** Stock levels and low-stock alerts are handled in Phase B9 (`/api/v1/inventory`).
+- **Product Images:** Actual file upload infrastructure is handled in Phase B10.
 
 ---
 
-## ⚙️ Collection API Endpoints
+## ⚙️ Product API Endpoints
 
 | Endpoint | Method | Access | Description |
 |---|---|---|---|
-| `/api/v1/collections` | `GET` | Public | List all active collections |
-| `/api/v1/collections/:slug` | `GET` | Public | Get active collection details by slug |
-| `/api/v1/admin/collections` | `POST` | Admin | Create a new collection |
-| `/api/v1/admin/collections` | `GET` | Admin | List all collections (with pagination, search, & status filter) |
-| `/api/v1/admin/collections/:id` | `GET` | Admin | Get collection details by ID |
-| `/api/v1/admin/collections/:id` | `PATCH` | Admin | Update collection details |
-| `/api/v1/admin/collections/:id` | `DELETE` | Admin | Delete collection (or soft-deactivate if products exist) |
+| `/api/v1/products` | `GET` | Public | List active products (supports category, collection, price range, featured & search filters) |
+| `/api/v1/products/:slug` | `GET` | Public | Get active product details by slug |
+| `/api/v1/admin/products` | `POST` | Admin | Create a new product |
+| `/api/v1/admin/products` | `GET` | Admin | List all products (with status filter, pagination, search & whitelisted sorting) |
+| `/api/v1/admin/products/:id` | `GET` | Admin | Get full administrative product details by ID |
+| `/api/v1/admin/products/:id` | `PATCH` | Admin | Update product details |
+| `/api/v1/admin/products/:id` | `DELETE` | Admin | Delete or soft-deactivate product |

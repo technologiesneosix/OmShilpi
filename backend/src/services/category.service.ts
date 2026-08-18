@@ -212,43 +212,31 @@ export class CategoryService {
    * If no products exist, safely hard-deletes the category.
    */
   static async deleteCategory(id: string): Promise<{
-    action: 'deactivated' | 'deleted';
+    action: 'deleted';
     message: string;
-    category?: Category;
   }> {
     const category = await prisma.category.findUnique({
       where: { id },
-      include: {
-        _count: {
-          select: { products: true },
-        },
-      },
     });
 
     if (!category) {
       throw ApiError.notFound(`Category with ID '${id}' not found`, 'CATEGORY_NOT_FOUND');
     }
 
-    if (category._count.products > 0) {
-      const updated = await prisma.category.update({
-        where: { id },
-        data: { isActive: false },
-      });
+    // Unassign products referencing this category to avoid foreign key errors
+    await prisma.product.updateMany({
+      where: { categoryId: id },
+      data: { categoryId: null },
+    });
 
-      return {
-        action: 'deactivated',
-        message: `Category '${category.name}' has ${category._count.products} associated product(s). Soft-deactivated instead of deleting.`,
-        category: updated,
-      };
-    }
-
+    // Delete category record
     await prisma.category.delete({
       where: { id },
     });
 
     return {
       action: 'deleted',
-      message: `Category '${category.name}' successfully deleted.`,
+      message: `Category '${category.name}' deleted successfully.`,
     };
   }
 }

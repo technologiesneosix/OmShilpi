@@ -7,6 +7,7 @@ import {
   orderIdParamSchema,
   updateOrderStatusSchema,
   adminOrderQuerySchema,
+  customerOrderQuerySchema,
 } from '../validators/order.validator';
 
 export class OrderController {
@@ -22,7 +23,8 @@ export class OrderController {
    */
   static getCustomerOrders = asyncHandler(async (req: Request, res: Response) => {
     const userId = req.user!.id;
-    const result = await OrderService.getCustomerOrders(userId, req.query as any);
+    const query = customerOrderQuerySchema.parse(req.query);
+    const result = await OrderService.getCustomerOrders(userId, query);
 
     return ApiResponse.paginated(res, 'Orders retrieved successfully', result.orders, result.pagination);
   });
@@ -63,13 +65,25 @@ export class OrderController {
   });
 
   /**
+   * Admin retrieves specific order details (Admin / Staff).
+   * GET /api/v1/admin/orders/:id
+   */
+  static getAdminOrderById = asyncHandler(async (req: Request, res: Response) => {
+    const { id } = orderIdParamSchema.parse(req.params);
+    const order = await OrderService.getAdminOrderById(id);
+
+    return ApiResponse.success(res, 'Admin order details retrieved successfully', order);
+  });
+
+  /**
    * Admin updates order status (Admin / Staff).
    * PATCH /api/v1/admin/orders/:id/status
    */
   static updateOrderStatus = asyncHandler(async (req: Request, res: Response) => {
+    const adminId = req.user!.id;
     const { id } = orderIdParamSchema.parse(req.params);
     const { status } = updateOrderStatusSchema.parse(req.body);
-    const order = await OrderService.updateOrderStatus(id, status);
+    const order = await OrderService.updateOrderStatus(id, status, adminId);
 
     return ApiResponse.success(res, 'Order status updated successfully', order);
   });

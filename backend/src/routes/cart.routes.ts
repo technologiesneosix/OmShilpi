@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { requireAuth, requireRole } from '../middleware/auth.middleware';
+import { requireAuth } from '../middleware/auth.middleware';
 import { CartController } from '../controllers/cart.controller';
 
 const router = Router();
 
-// Require CUSTOMER authentication for all cart operations
-router.use(requireAuth, requireRole('CUSTOMER'));
+// Require authentication for all cart operations
+router.use(requireAuth);
 
 /**
  * @route GET /api/v1/cart
@@ -23,11 +23,11 @@ router.get('/', CartController.getCart);
 router.get('/count', CartController.getCartCount);
 
 /**
- * @route POST /api/v1/cart/items
+ * @route POST /api/v1/cart or POST /api/v1/cart/items
  * @desc Add item to cart
  * @access Customer
  */
-router.post('/items', CartController.addItemToCart);
+router.post(['/', '/items'], CartController.addItemToCart);
 
 /**
  * @route PATCH /api/v1/cart/items/:itemId

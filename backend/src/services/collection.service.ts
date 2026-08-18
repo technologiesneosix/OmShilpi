@@ -217,43 +217,31 @@ export class CollectionService {
    * If no products exist, safely hard-deletes the collection.
    */
   static async deleteCollection(id: string): Promise<{
-    action: 'deactivated' | 'deleted';
+    action: 'deleted';
     message: string;
-    collection?: Collection;
   }> {
     const collection = await prisma.collection.findUnique({
       where: { id },
-      include: {
-        _count: {
-          select: { products: true },
-        },
-      },
     });
 
     if (!collection) {
       throw ApiError.notFound(`Collection with ID '${id}' not found`, 'COLLECTION_NOT_FOUND');
     }
 
-    if (collection._count.products > 0) {
-      const updated = await prisma.collection.update({
-        where: { id },
-        data: { isActive: false },
-      });
+    // Unassign products referencing this collection to avoid foreign key errors
+    await prisma.product.updateMany({
+      where: { collectionId: id },
+      data: { collectionId: null },
+    });
 
-      return {
-        action: 'deactivated',
-        message: `Collection '${collection.name}' has ${collection._count.products} associated product(s). Soft-deactivated instead of deleting.`,
-        collection: updated,
-      };
-    }
-
+    // Delete collection record
     await prisma.collection.delete({
       where: { id },
     });
 
     return {
       action: 'deleted',
-      message: `Collection '${collection.name}' successfully deleted.`,
+      message: `Collection '${collection.name}' deleted successfully.`,
     };
   }
 }

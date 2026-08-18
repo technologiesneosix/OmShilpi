@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Builds
+dist/
+**/dist/
+build/
+**/build/
+
+# Environment files
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+**/logs/
+
+# Scratch & temporary zips
+scratch/
+**/scratch/
+*.zip
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

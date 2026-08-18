@@ -1,0 +1,151 @@
+{
+  "info": {
+    "_postman_id": "b17-email-system-collection",
+    "name": "Om Shilpi Jewellers - B17 Transactional Email System",
+    "description": "Postman test collection for Phase B17 Transactional Email System covering Customer Signup Welcome Email, Forgot Password Reset Email, Public Enquiry Admin Notification & Customer Acknowledgement Emails, Checkout Order Confirmation Email, Payment Verification Email, Admin Order Status Update Emails, and B1-B16 Regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Customer Signup (Triggers Welcome Email)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Email Test User\",\n  \"email\": \"email.test.user.b17@example.com\",\n  \"password\": \"TestPassword123!\",\n  \"phone\": \"9876543210\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/register",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "02 Forgot Password (Triggers Password Reset Email)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"email.test.user.b17@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/forgot-password",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "forgot-password"]
+        }
+      }
+    },
+    {
+      "name": "03 Submit Public Enquiry (Triggers Admin & Acknowledgement Emails)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Enquiry Email Tester\",\n  \"email\": \"enquiry.tester.b17@example.com\",\n  \"phone\": \"9876543210\",\n  \"subject\": \"Bridal Collection Inquiries\",\n  \"message\": \"Checking B17 admin notification and customer acknowledgement emails.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "04 Checkout Execution (Triggers Order Confirmation Email)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shippingAddressId\": \"{{shippingAddressId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/checkout",
+          "host": ["{{baseUrl}}"],
+          "path": ["checkout"]
+        }
+      }
+    },
+    {
+      "name": "05 Payment Signature Verification (Triggers Payment Confirmation Email)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"razorpay_order_id\": \"{{razorpayOrderId}}\",\n  \"razorpay_payment_id\": \"pay_mock_b17_test\",\n  \"razorpay_signature\": \"{{razorpaySignature}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/payments/verify",
+          "host": ["{{baseUrl}}"],
+          "path": ["payments", "verify"]
+        }
+      }
+    },
+    {
+      "name": "06 Admin Update Status to SHIPPED (Triggers Shipping Email)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"SHIPPED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders", "{{orderId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "07 Admin Update Status to DELIVERED (Triggers Delivery Email)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"DELIVERED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders", "{{orderId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "08 B1-B16 Regression Protection (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

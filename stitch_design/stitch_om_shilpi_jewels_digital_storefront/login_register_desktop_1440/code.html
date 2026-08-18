@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login &amp; Register | Om Shilpi Jewels</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#665d4e",
+                        "background": "#fdf9f2",
+                        "on-tertiary-container": "#342e21",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#ffdead",
+                        "surface-container-high": "#ebe8e1",
+                        "tertiary-fixed-dim": "#d0c5b2",
+                        "primary-fixed-dim": "#eebf75",
+                        "outline-variant": "#d2c4b4",
+                        "secondary-container": "#ebe1d7",
+                        "secondary-fixed": "#ebe1d7",
+                        "on-surface": "#1c1c18",
+                        "error": "#ba1a1a",
+                        "secondary": "#645d56",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#412a00",
+                        "inverse-on-surface": "#f4f0e9",
+                        "surface-container-low": "#f7f3ec",
+                        "on-tertiary-fixed": "#201b0f",
+                        "on-primary-fixed": "#281900",
+                        "surface-container": "#f1ede6",
+                        "surface-container-highest": "#e6e2db",
+                        "surface-dim": "#dddad3",
+                        "on-error": "#ffffff",
+                        "primary": "#7b5818",
+                        "primary-container": "#b98f4a",
+                        "inverse-primary": "#eebf75",
+                        "surface-bright": "#fdf9f2",
+                        "secondary-fixed-dim": "#cec5bc",
+                        "on-tertiary-fixed-variant": "#4d4637",
+                        "on-secondary-fixed": "#1f1b15",
+                        "tertiary-container": "#9f9583",
+                        "surface": "#fdf9f2",
+                        "on-background": "#1c1c18",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ede1cd",
+                        "on-secondary-container": "#6a635c",
+                        "outline": "#817567",
+                        "on-surface-variant": "#4f4539",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#604100",
+                        "surface-tint": "#7b5818",
+                        "on-secondary-fixed-variant": "#4c463f",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#31302c",
+                        "surface-variant": "#e6e2db",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "container-max": "1280px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "base": "8px",
+                        "lg": "48px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Montserrat"],
+                        "body-md": ["Montserrat"],
+                        "h3": ["Playfair Display"],
+                        "meta": ["Montserrat"],
+                        "h2-mobile": ["Playfair Display"],
+                        "h1": ["Playfair Display"],
+                        "body-lg": ["Montserrat"],
+                        "h2": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "meta": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "h2-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "h1": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "h1-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .custom-shadow {
+            box-shadow: 0px 4px 20px rgba(28, 28, 24, 0.05);
+        }
+        .custom-shadow-hover:hover {
+            box-shadow: 0px 4px 20px rgba(28, 28, 24, 0.1);
+            transform: translateY(-2px);
+        }
+        .btn-text {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<!-- Note: TopNav/BottomNav suppressed as this is a linear/transactional screen -->
+<main class="flex-grow flex w-full">
+<div class="hidden md:flex w-1/2 bg-surface-container-high relative">
+<div class="w-full h-full bg-cover bg-center absolute inset-0" data-alt="A stunning, high-fashion editorial photograph of a South Asian model wearing an elaborate, heavy gold bridal necklace and intricate jhumka earrings. The lighting is soft and golden, illuminating the warm tones of her skin and the intricate craftsmanship of the jewelry. The background is a soft, out-of-focus champagne color, creating a luxurious, premium Indian wedding aesthetic. The overall mood is elegant, opulent, and refined." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjIL6CC_6ZIJyZqZRkkO5RvzMkRyT2UT2-2t-CxKg6Qj3Wyzlw4n-SP22EIWnm0GzvNKLrV56qwT0CSpDnxAodU0PtOOOZM64UyNCn8Z8Iw1aY4R64Qo3m1pt9VeiJon_qoT4S3Z6DGCcdwpKhzZtEmvrmp9ph5GZ8tbzwleVrcTqlv8jAx9t9G8oJkxmSWByfe70NPwfdTWi-6jCfMaRQm3bzjnsWVPPtfZHbNDwIryo6RaRmpm0c')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/60 to-transparent"></div>
+<div class="absolute bottom-12 left-12 right-12 text-on-primary">
+<h2 class="font-h1 text-h1 mb-4">Timeless Elegance</h2>
+<p class="font-body-lg text-body-lg opacity-90 max-w-md">Discover the finest craftsmanship and heritage in every piece.</p>
+</div>
+</div>
+<div class="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-12 md:p-gutter overflow-y-auto">
+<div class="w-full max-w-md bg-surface-container rounded-xl p-8 border border-outline-variant">
+<div class="text-center mb-8">
+<h1 class="font-h2 text-h2 text-primary mb-2">Om Shilpi Jewels</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Sign in to your account</p>
+</div>
+<!-- Login Form -->
+<form class="space-y-6" id="loginForm">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="email">Email Address</label>
+<input class="w-full bg-surface border-error text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:ring-1 focus:ring-error transition-colors font-body-md" id="email" type="email" value="invalid-email-format"/>
+<p class="font-meta text-meta text-error mt-2 flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">error</span>
+                            Invalid email format. Please enter a valid email.
+                        </p>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-2" for="password">Password</label>
+<input class="w-full bg-surface border border-outline-variant text-on-surface rounded-DEFAULT px-4 py-3 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors font-body-md" id="password" type="password"/>
+</div>
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded-sm border-outline-variant text-primary focus:ring-primary bg-surface" type="checkbox"/>
+<span class="font-label-md text-label-md text-on-surface-variant">Remember Me</span>
+</label>
+<a class="font-label-md text-label-md text-primary hover:underline transition-all" href="#">Forgot Password?</a>
+</div>
+<button class="w-full bg-primary-container text-on-primary font-label-md text-label-md btn-text py-4 rounded-DEFAULT transition-all duration-300 custom-shadow-hover" type="submit">
+                        Sign In
+                    </button>
+</form>
+<!-- Divider -->
+<div class="flex items-center my-8">
+<div class="flex-grow border-t border-outline-variant"></div>
+<span class="px-4 font-meta text-meta text-on-surface-variant">OR</span>
+<div class="flex-grow border-t border-outline-variant"></div>
+</div>
+<div class="text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Don't have an account? 
+                        <a class="text-primary font-label-md text-label-md hover:underline transition-all ml-1" href="#">Create Account</a>
+</p>
+</div>
+</div>
+</div>
+</main>
+</body></html>

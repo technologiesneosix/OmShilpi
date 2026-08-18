@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Shopping Cart &amp; Checkout - Om Shilpi Jewels</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;family=Playfair+Display:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary": "#665d4e",
+                        "background": "#fdf9f2",
+                        "on-tertiary-container": "#342e21",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#ffdead",
+                        "surface-container-high": "#ebe8e1",
+                        "tertiary-fixed-dim": "#d0c5b2",
+                        "primary-fixed-dim": "#eebf75",
+                        "outline-variant": "#d2c4b4",
+                        "secondary-container": "#ebe1d7",
+                        "secondary-fixed": "#ebe1d7",
+                        "on-surface": "#1c1c18",
+                        "error": "#ba1a1a",
+                        "secondary": "#645d56",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#412a00",
+                        "inverse-on-surface": "#f4f0e9",
+                        "surface-container-low": "#f7f3ec",
+                        "on-tertiary-fixed": "#201b0f",
+                        "on-primary-fixed": "#281900",
+                        "surface-container": "#f1ede6",
+                        "surface-container-highest": "#e6e2db",
+                        "surface-dim": "#dddad3",
+                        "on-error": "#ffffff",
+                        "primary": "#7b5818",
+                        "primary-container": "#b98f4a",
+                        "inverse-primary": "#eebf75",
+                        "surface-bright": "#fdf9f2",
+                        "secondary-fixed-dim": "#cec5bc",
+                        "on-tertiary-fixed-variant": "#4d4637",
+                        "on-secondary-fixed": "#1f1b15",
+                        "tertiary-container": "#9f9583",
+                        "surface": "#fdf9f2",
+                        "on-background": "#1c1c18",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#ede1cd",
+                        "on-secondary-container": "#6a635c",
+                        "outline": "#817567",
+                        "on-surface-variant": "#4f4539",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#604100",
+                        "surface-tint": "#7b5818",
+                        "on-secondary-fixed-variant": "#4c463f",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#31302c",
+                        "surface-variant": "#e6e2db",
+                        "surface-container-lowest": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "container-max": "1280px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "base": "8px",
+                        "lg": "48px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Montserrat"],
+                        "body-md": ["Montserrat"],
+                        "h3": ["Playfair Display"],
+                        "meta": ["Montserrat"],
+                        "h2-mobile": ["Playfair Display"],
+                        "h1": ["Playfair Display"],
+                        "body-lg": ["Montserrat"],
+                        "h2": ["Playfair Display"],
+                        "h1-mobile": ["Playfair Display"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.4", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "meta": ["12px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "h2-mobile": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "h1": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "h1-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .step-active { border-color: theme('colors.primary'); color: theme('colors.primary'); }
+        .step-completed { background-color: theme('colors.primary'); color: theme('colors.on-primary'); border-color: theme('colors.primary'); }
+        .step-inactive { border-color: theme('colors.outline-variant'); color: theme('colors.on-surface-variant'); }
+        .step-line-active { background-color: theme('colors.primary'); }
+        .step-line-inactive { background-color: theme('colors.outline-variant'); }
+        
+        .floating-input {
+            transition: all 0.2s ease;
+        }
+        .floating-input:focus + label,
+        .floating-input:not(:placeholder-shown) + label {
+            transform: translateY(-1.5rem) scale(0.85);
+            color: theme('colors.primary');
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- Minimal Header -->
+<header class="w-full border-b border-outline-variant bg-surface py-md px-gutter flex justify-center items-center z-50">
+<a class="font-h2 text-h2 tracking-tight text-primary" href="/">Om Shilpi Jewels</a>
+</header>
+<!-- Main Content Container (Dynamic between Cart and Checkout) -->
+<main class="flex-grow w-full max-w-container-max mx-auto px-gutter py-xl">
+<!-- === CART VIEW (Default) === -->
+<div class="block" id="cart-view">
+<h1 class="font-h1 text-h1 text-center mb-xl">Your Cart</h1>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Cart Items List -->
+<div class="lg:col-span-8">
+<div class="hidden md:grid grid-cols-12 gap-4 border-b border-outline-variant pb-sm mb-md text-on-surface-variant font-label-md text-label-md">
+<div class="col-span-6">Product</div>
+<div class="col-span-2 text-center">Quantity</div>
+<div class="col-span-2 text-right">Price</div>
+<div class="col-span-2 text-right">Total</div>
+</div>
+<!-- Item 1 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-md border-b border-surface-container-highest">
+<div class="md:col-span-6 flex gap-md">
+<div class="w-24 h-24 bg-surface-container rounded shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A close up, studio lit macro shot of a delicate gold necklace with a prominent emerald pendant resting on a textured champagne-colored fabric. The lighting is soft and warm, highlighting the intricate gold craftsmanship and the deep green facets of the gemstone. The composition is elegant and minimalist, focusing entirely on the premium quality of the jewelry piece against a neutral luxury background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgtdj3iazpH4vBMaBnMkYZn3s2lmXumiKd5MPTQBfFjzgffy2wRaXNd3kAXn_SdOgY4_cqpZRePYNfwsABTL6Gk2qPqRXMYwFCEdcm289EcyiviSC_kU-SY6LZMPOTGyfg1NBpkxAiD9jS8SFlzEmhtkK2imolz2SQ3ZfniCcpOTpbO07YpiUHbHmFDlW33YTqeGEczigiIbp_3EMfOSVsquzMxELDBbVA-CDXMzCugOUYAZpv5Nxs"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="font-h3 text-h3 text-primary mb-xs">Emerald Radiance Necklace</h3>
+<p class="font-meta text-meta text-on-surface-variant mb-sm">Variant: 18K Gold, 16"</p>
+<div class="flex gap-4">
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">delete</span> Remove
+                                    </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">favorite</span> Wishlist
+                                    </button>
+</div>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-center">
+<div class="flex items-center border border-outline-variant rounded bg-surface">
+<button class="px-3 py-1 text-on-surface hover:bg-surface-container-low" onclick="updateQty(this, -1)">-</button>
+<span class="px-3 font-body-md text-body-md w-12 text-center">1</span>
+<button class="px-3 py-1 text-on-surface hover:bg-surface-container-low" onclick="updateQty(this, 1)">+</button>
+</div>
+</div>
+<div class="md:col-span-2 text-right font-body-md text-body-md hidden md:block">
+                            $1,250.00
+                        </div>
+<div class="md:col-span-2 text-right font-label-md text-label-md text-primary font-semibold">
+                            $1,250.00
+                        </div>
+</div>
+<!-- Item 2 -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center py-md border-b border-surface-container-highest">
+<div class="md:col-span-6 flex gap-md">
+<div class="w-24 h-24 bg-surface-container rounded shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A macro studio shot of a pair of diamond stud earrings set in platinum, resting on a soft ivory velvet cushion. The lighting is crisp and bright, creating brilliant reflections within the diamonds while casting a very subtle, diffused shadow. The image exudes a modern, premium aesthetic consistent with high-end bridal jewelry photography, maintaining a clean and sophisticated composition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKfEWJjaOIqJOtcAdOKHAofEaaLIoaaQynJCkGupl259eO3_gF9eM3MuZtl9X-p1pJc_pg_36_Kwp3S5IaVufXRzlkJyBSh6xDmyF7D_C82bP7oWdQuQ1sVODBALkFa2tol87jiz7rZbVTqDeR2ASeHYEh1TJJqKMaFqNNzyNjSa57ffY6MGB_rW7PJqXlbw_GKeqNhZhKstpbZRiRiepfEXpw--ejJ3LzIhxwgwlJgJPXpOn3jKyK"/>
+</div>
+<div class="flex flex-col justify-center">
+<h3 class="font-h3 text-h3 text-primary mb-xs">Classic Diamond Studs</h3>
+<p class="font-meta text-meta text-on-surface-variant mb-sm">Variant: Platinum, 0.5ct</p>
+<div class="flex gap-4">
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">delete</span> Remove
+                                    </button>
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">favorite</span> Wishlist
+                                    </button>
+</div>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-center">
+<div class="flex items-center border border-outline-variant rounded bg-surface">
+<button class="px-3 py-1 text-on-surface hover:bg-surface-container-low" onclick="updateQty(this, -1)">-</button>
+<span class="px-3 font-body-md text-body-md w-12 text-center">2</span>
+<button class="px-3 py-1 text-on-surface hover:bg-surface-container-low" onclick="updateQty(this, 1)">+</button>
+</div>
+</div>
+<div class="md:col-span-2 text-right font-body-md text-body-md hidden md:block">
+                            $800.00
+                        </div>
+<div class="md:col-span-2 text-right font-label-md text-label-md text-primary font-semibold">
+                            $1,600.00
+                        </div>
+</div>
+</div>
+<!-- Order Summary Sidebar -->
+<div class="lg:col-span-4">
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-lg sticky top-24">
+<h2 class="font-h2 text-h2 text-primary mb-md">Order Summary</h2>
+<div class="flex justify-between mb-sm font-body-md text-body-md">
+<span class="text-on-surface-variant">Subtotal</span>
+<span>$2,850.00</span>
+</div>
+<div class="flex justify-between mb-md font-body-md text-body-md pb-md border-b border-surface-container-highest">
+<span class="text-on-surface-variant">Estimated Shipping</span>
+<span>Complimentary</span>
+</div>
+<div class="mb-lg">
+<p class="font-label-md text-label-md text-on-surface-variant mb-xs">Gift Card or Discount Code</p>
+<div class="flex gap-2">
+<input class="flex-grow bg-surface border border-outline-variant rounded px-sm py-2 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md" placeholder="Enter Code" type="text"/>
+<button class="bg-surface border border-outline-variant text-on-surface px-md py-2 rounded font-label-md text-label-md uppercase tracking-wider hover:bg-surface-container transition-colors">Apply</button>
+</div>
+</div>
+<div class="flex justify-between mb-lg font-h3 text-h3 text-primary">
+<span>Total</span>
+<span>$2,850.00</span>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-4 rounded font-label-md text-label-md uppercase tracking-widest hover:shadow-[0px_4px_20px_rgba(28,28,24,0.05)] hover:-translate-y-0.5 transition-all duration-300" onclick="toggleView()">
+                            Proceed to Checkout
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- === CHECKOUT VIEW (Hidden by default) === -->
+<div class="hidden" id="checkout-view">
+<h1 class="font-h1 text-h1 text-center mb-xl">Checkout</h1>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<!-- Checkout Form Area -->
+<div class="lg:col-span-7 xl:col-span-8">
+<!-- Progress Bar -->
+<div class="flex items-center justify-between mb-xl relative">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-[2px] step-line-inactive z-0"></div>
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1/4 h-[2px] step-line-active z-0"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full border-2 step-completed flex items-center justify-center font-label-md text-label-md bg-surface">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<span class="font-meta text-meta text-primary absolute -bottom-6 whitespace-nowrap">Contact</span>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full border-2 step-active bg-surface flex items-center justify-center font-label-md text-label-md">
+                                2
+                            </div>
+<span class="font-meta text-meta text-primary absolute -bottom-6 whitespace-nowrap">Address</span>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full border-2 step-inactive bg-surface flex items-center justify-center font-label-md text-label-md">
+                                3
+                            </div>
+<span class="font-meta text-meta text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Delivery</span>
+</div>
+<!-- Step 4 -->
+<div class="relative z-10 flex flex-col items-center gap-2">
+<div class="w-8 h-8 rounded-full border-2 step-inactive bg-surface flex items-center justify-center font-label-md text-label-md">
+                                4
+                            </div>
+<span class="font-meta text-meta text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Payment</span>
+</div>
+</div>
+<!-- Form Container -->
+<div class="bg-surface border border-outline-variant rounded-lg p-lg">
+<h2 class="font-h2 text-h2 text-primary mb-md">Shipping Address</h2>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="relative md:col-span-1 pt-4">
+<input class="floating-input w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md peer" id="fname" placeholder=" " type="text"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-on-surface-variant font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="fname">First Name</label>
+</div>
+<div class="relative md:col-span-1 pt-4">
+<input class="floating-input w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md peer" id="lname" placeholder=" " type="text"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-on-surface-variant font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="lname">Last Name</label>
+</div>
+<div class="relative md:col-span-2 pt-4">
+<input class="floating-input w-full bg-surface border border-error rounded px-sm py-3 focus:border-error focus:ring-1 focus:ring-error outline-none font-body-md text-body-md peer" id="address" placeholder=" " type="text"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-error font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="address">Street Address</label>
+<p class="text-error font-meta text-meta mt-1">Please enter a valid street address.</p>
+</div>
+<div class="relative md:col-span-2 pt-4">
+<input class="floating-input w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md peer" id="apt" placeholder=" " type="text"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-on-surface-variant font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="apt">Apartment, suite, etc. (optional)</label>
+</div>
+<div class="relative md:col-span-1 pt-4">
+<input class="floating-input w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md peer" id="city" placeholder=" " type="text"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-on-surface-variant font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="city">City</label>
+</div>
+<div class="relative md:col-span-1 pt-4">
+<select class="w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md appearance-none" id="state">
+<option disabled="" selected="" value="">State / Province</option>
+<option value="NY">New York</option>
+<option value="CA">California</option>
+</select>
+</div>
+<div class="relative md:col-span-1 pt-4">
+<input class="floating-input w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md peer" id="zip" placeholder=" " type="text"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-on-surface-variant font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="zip">ZIP / Postal Code</label>
+</div>
+<div class="relative md:col-span-1 pt-4">
+<input class="floating-input w-full bg-surface border border-outline-variant rounded px-sm py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md peer" id="phone" placeholder=" " type="tel"/>
+<label class="absolute left-sm top-7 -translate-y-1/2 text-on-surface-variant font-label-md text-label-md pointer-events-none transition-all duration-200 bg-surface px-1" for="phone">Phone Number</label>
+</div>
+<div class="md:col-span-2 flex justify-between items-center mt-md pt-md border-t border-surface-container-highest">
+<button class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2" onclick="toggleView()" type="button">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span> Return to Cart
+                                </button>
+<button class="bg-primary-container text-on-primary px-xl py-4 rounded font-label-md text-label-md uppercase tracking-widest hover:shadow-[0px_4px_20px_rgba(28,28,24,0.05)] hover:-translate-y-0.5 transition-all duration-300" type="button">
+                                    Continue to Delivery
+                                </button>
+</div>
+</form>
+</div>
+</div>
+<!-- Sticky Mini Summary -->
+<div class="lg:col-span-5 xl:col-span-4">
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-lg sticky top-24">
+<h3 class="font-h3 text-h3 text-primary mb-md">Order Summary</h3>
+<!-- Mini Items list -->
+<div class="flex flex-col gap-4 border-b border-surface-container-highest pb-md mb-md">
+<div class="flex gap-sm items-center">
+<div class="w-16 h-16 bg-surface rounded overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="A small thumbnail showing a delicate gold necklace with an emerald pendant, rendered in a bright, modern studio setting on a champagne background, highlighting the jewelry's elegant details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxcj-Xq39DcvG8BXTisngiJv-hxBZ6CEP4cDr8QDzmxlXHZG-ZJ8HcXFi5BggrODLXvzptnnGJLtll5Ce9m_DYUnBPOPdWto154De8Rd21uVqs9iEb3gyw1Yq8E2z7n2Eds_AjdsP83P2m7AKKz47w6MD0jO1eQKJ_uP3ecJPUQkjdwBanP2Lpx9b0hlWOvEmpRhj8LJ3P8O0eO3auXUV44kUu0IDf8PFuEltNlgO22iHXjzZMqzQH"/>
+<span class="absolute -top-2 -right-2 bg-secondary text-on-secondary w-5 h-5 rounded-full flex items-center justify-center font-meta text-[10px]">1</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-md text-label-md text-on-surface truncate w-32">Emerald Radiance Necklace</p>
+<p class="font-meta text-meta text-on-surface-variant">18K Gold</p>
+</div>
+<div class="font-label-md text-label-md text-primary">$1,250.00</div>
+</div>
+<div class="flex gap-sm items-center">
+<div class="w-16 h-16 bg-surface rounded overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="A small thumbnail image of platinum diamond stud earrings resting on ivory velvet in bright, soft lighting, capturing the brilliant sparkle of the diamonds in a minimal aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVBxtv0VlZhKHufMKA9FXMMWV7rtDFU_3Fg4sxc4LzZzfLW5XIQ5Bcqo6pHT_3n3bye7D878MBsZPtJxVACACogSY8fMaylKxNkBqWcjSYOW9s9o-G_IBJL2vm_FUXBQoDZ1VMBy5bvukCNTkbXq5RDXx9tw61imlb4IJuMbR1IsaykAeGCpCUFfGHZyD4H-MIWNWjuU7cxIqrL86GgjY0YbyPT8arNBiuD47PDbqQCKmlFh0b053q"/>
+<span class="absolute -top-2 -right-2 bg-secondary text-on-secondary w-5 h-5 rounded-full flex items-center justify-center font-meta text-[10px]">2</span>
+</div>
+<div class="flex-grow">
+<p class="font-label-md text-label-md text-on-surface truncate w-32">Classic Diamond Studs</p>
+<p class="font-meta text-meta text-on-surface-variant">Platinum</p>
+</div>
+<div class="font-label-md text-label-md text-primary">$1,600.00</div>
+</div>
+</div>
+<div class="flex justify-between mb-sm font-body-md text-body-md">
+<span class="text-on-surface-variant">Subtotal</span>
+<span>$2,850.00</span>
+</div>
+<div class="flex justify-between mb-md font-body-md text-body-md pb-md border-b border-surface-container-highest">
+<span class="text-on-surface-variant">Shipping</span>
+<span class="text-on-surface-variant text-sm">Calculated at next step</span>
+</div>
+<div class="flex justify-between font-h3 text-h3 text-primary">
+<span>Total</span>
+<span>$2,850.00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        function updateQty(btn, change) {
+            const span = btn.parentElement.querySelector('span');
+            let val = parseInt(span.innerText);
+            val = Math.max(1, val + change);
+            span.innerText = val;
+            // In a real app, you'd trigger a price update here
+        }
+        
+        function toggleView() {
+            const cart = document.getElementById('cart-view');
+            const checkout = document.getElementById('checkout-view');
+            
+            if (cart.classList.contains('block')) {
+                cart.classList.replace('block', 'hidden');
+                checkout.classList.replace('hidden', 'block');
+                window.scrollTo(0,0);
+            } else {
+                checkout.classList.replace('block', 'hidden');
+                cart.classList.replace('hidden', 'block');
+                window.scrollTo(0,0);
+            }
+        }
+    </script>
+</body></html>

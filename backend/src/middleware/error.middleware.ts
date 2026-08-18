@@ -22,6 +22,10 @@ export const errorHandler = (
     message = err.message;
     errorCode = err.errorCode;
     details = err.details;
+  } else if (err instanceof SyntaxError && 'status' in err && (err as any).status === 400 && 'body' in err) {
+    statusCode = 400;
+    errorCode = 'INVALID_JSON_PAYLOAD';
+    message = 'Invalid JSON syntax in request body. Ensure string values in JSON bodies are enclosed in double quotes (e.g. "productId": "{{productId}}").';
   } else if (err instanceof z.ZodError) {
     statusCode = 400;
     errorCode = 'VALIDATION_ERROR';

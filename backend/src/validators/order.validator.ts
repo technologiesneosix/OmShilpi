@@ -28,7 +28,13 @@ export const adminOrderQuerySchema = z.object({
   search: z.string().optional(),
 });
 
+export const customerOrderQuerySchema = z.object({
+  page: z.string().optional(),
+  limit: z.string().optional(),
+});
+
 export type CheckoutPreviewInput = z.infer<typeof checkoutPreviewSchema>;
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
 export type AdminOrderQueryInput = z.infer<typeof adminOrderQuerySchema>;
+export type CustomerOrderQueryInput = z.infer<typeof customerOrderQuerySchema>;

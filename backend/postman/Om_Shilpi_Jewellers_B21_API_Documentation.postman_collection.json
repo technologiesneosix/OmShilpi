@@ -1,0 +1,60 @@
+{
+  "info": {
+    "_postman_id": "b21-api-documentation-collection",
+    "name": "Om Shilpi Jewellers - B21 API Documentation",
+    "description": "Postman test collection for Phase B21 API Documentation verifying GET /api/docs (Swagger UI), GET /api-docs (Alias), GET /api/docs/json (OpenAPI 3.0 specification JSON), and B1-B20 regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Swagger UI HTML Endpoint (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/docs",
+          "host": ["{{baseUrl}}"],
+          "path": ["docs"]
+        }
+      }
+    },
+    {
+      "name": "02 Alias Swagger UI Endpoint (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api-docs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api-docs"]
+        }
+      }
+    },
+    {
+      "name": "03 OpenAPI 3.0 Raw JSON Spec (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/docs/json",
+          "host": ["{{baseUrl}}"],
+          "path": ["docs", "json"]
+        }
+      }
+    },
+    {
+      "name": "04 B1-B20 Regression Protection (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

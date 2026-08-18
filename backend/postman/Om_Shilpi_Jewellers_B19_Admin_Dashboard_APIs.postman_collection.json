@@ -1,0 +1,62 @@
+{
+  "info": {
+    "_postman_id": "b19-admin-dashboard-apis-collection",
+    "name": "Om Shilpi Jewellers - B19 Admin Dashboard APIs",
+    "description": "Postman test collection for Phase B19 Admin Dashboard APIs covering GET /api/v1/admin/dashboard (totalCustomers, totalProducts, totalOrders, totalRevenue, pendingOrders, lowStock, newEnquiries, recentOrders), RBAC authorization, and B1-B18 Regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Admin GET Dashboard Summary (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "02 Customer Access to Dashboard Denied (403 Forbidden)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "03 Unauthenticated Access to Dashboard Denied (401 Unauthorized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "04 B1-B18 Regression Protection (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

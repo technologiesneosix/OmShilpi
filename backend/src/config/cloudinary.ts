@@ -46,12 +46,16 @@ export const uploadToCloudinaryBuffer = async (
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: env.CLOUDINARY_FOLDER || 'om-shilpi/products',
+        asset_folder: env.CLOUDINARY_FOLDER || 'om-shilpi/products',
+        use_asset_folder: true,
+        tags: env.CLOUDINARY_FOLDER ? [env.CLOUDINARY_FOLDER] : undefined,
         resource_type: 'image',
         public_id: filenameHint ? `${filenameHint}_${Date.now()}` : undefined,
         overwrite: false,
       },
       (error, result: UploadApiResponse | undefined) => {
         if (error || !result) {
+          console.error('Cloudinary upload error:', error);
           logger.error('Cloudinary upload stream error:', error);
           return reject(ApiError.internal('Failed to upload image asset to Cloudinary', 'CLOUDINARY_UPLOAD_FAILED'));
         }

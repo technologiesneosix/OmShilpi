@@ -66,7 +66,7 @@ export class AddressController {
     const { id } = addressIdParamSchema.parse(req.params);
     const result = await AddressService.deleteAddress(userId, id);
 
-    return ApiResponse.success(res, result.message);
+    return ApiResponse.success(res, 'Address deleted successfully', result);
   });
 
   /**

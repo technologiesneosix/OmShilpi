@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Wishlist - Om Shilpi Jewels</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&amp;family=Playfair+Display:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary": "#665d4e",
+                      "background": "#fdf9f2",
+                      "on-tertiary-container": "#342e21",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#ffdead",
+                      "surface-container-high": "#ebe8e1",
+                      "tertiary-fixed-dim": "#d0c5b2",
+                      "primary-fixed-dim": "#eebf75",
+                      "outline-variant": "#d2c4b4",
+                      "secondary-container": "#ebe1d7",
+                      "secondary-fixed": "#ebe1d7",
+                      "on-surface": "#1c1c18",
+                      "error": "#ba1a1a",
+                      "secondary": "#645d56",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#412a00",
+                      "inverse-on-surface": "#f4f0e9",
+                      "surface-container-low": "#f7f3ec",
+                      "on-tertiary-fixed": "#201b0f",
+                      "on-primary-fixed": "#281900",
+                      "surface-container": "#f1ede6",
+                      "surface-container-highest": "#e6e2db",
+                      "surface-dim": "#dddad3",
+                      "on-error": "#ffffff",
+                      "primary": "#7b5818",
+                      "primary-container": "#b98f4a",
+                      "inverse-primary": "#eebf75",
+                      "surface-bright": "#fdf9f2",
+                      "secondary-fixed-dim": "#cec5bc",
+                      "on-tertiary-fixed-variant": "#4d4637",
+                      "on-secondary-fixed": "#1f1b15",
+                      "tertiary-container": "#9f9583",
+                      "surface": "#fdf9f2",
+                      "on-background": "#1c1c18",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed": "#ede1cd",
+                      "on-secondary-container": "#6a635c",
+                      "outline": "#817567",
+                      "on-surface-variant": "#4f4539",
+                      "on-primary": "#ffffff",
+                      "on-primary-fixed-variant": "#604100",
+                      "surface-tint": "#7b5818",
+                      "on-secondary-fixed-variant": "#4c463f",
+                      "on-error-container": "#93000a",
+                      "inverse-surface": "#31302c",
+                      "surface-variant": "#e6e2db",
+                      "surface-container-lowest": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "xl": "80px",
+                      "sm": "12px",
+                      "container-max": "1280px",
+                      "md": "24px",
+                      "xs": "4px",
+                      "base": "8px",
+                      "lg": "48px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Montserrat"
+                      ],
+                      "body-md": [
+                              "Montserrat"
+                      ],
+                      "h3": [
+                              "Playfair Display"
+                      ],
+                      "meta": [
+                              "Montserrat"
+                      ],
+                      "h2-mobile": [
+                              "Playfair Display"
+                      ],
+                      "h1": [
+                              "Playfair Display"
+                      ],
+                      "body-lg": [
+                              "Montserrat"
+                      ],
+                      "h2": [
+                              "Playfair Display"
+                      ],
+                      "h1-mobile": [
+                              "Playfair Display"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h3": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "meta": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h2-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h2": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24 !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar (Hidden on Mobile, Visible on md+) -->
+<header class="hidden md:flex flex-col w-full z-50 px-gutter max-w-container-max mx-auto bg-surface dark:bg-surface docked full-width top-0 sticky border-b border-outline-variant dark:border-outline">
+<div class="flex items-center justify-between py-md">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 tracking-tight text-primary dark:text-inverse-primary cursor-pointer">Om Shilpi Jewels</span>
+</div>
+<nav class="flex items-center gap-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low duration-200 py-1 px-2 rounded" href="#">New Arrivals</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low duration-200 py-1 px-2 rounded" href="#">Gold</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low duration-200 py-1 px-2 rounded" href="#">Diamond</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low duration-200 py-1 px-2 rounded" href="#">Silver</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low duration-200 py-1 px-2 rounded" href="#">Jewellery</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-low duration-200 py-1 px-2 rounded" href="#">Collections</a>
+</nav>
+<div class="flex items-center gap-4 text-primary dark:text-inverse-primary">
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-all duration-200"><span class="material-symbols-outlined" data-icon="search">search</span></button>
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-all duration-200"><span class="material-symbols-outlined" data-icon="account_circle">account_circle</span></button>
+<button class="text-primary font-bold border-b-2 border-primary p-2 rounded-full transition-all duration-200"><span class="material-symbols-outlined filled-icon" data-icon="favorite">favorite</span></button>
+<button class="hover:bg-surface-container-low p-2 rounded-full transition-all duration-200"><span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-container-max mx-auto px-gutter py-lg min-h-[60vh]">
+<!-- Header Section -->
+<div class="flex flex-col items-center justify-center mb-xl text-center">
+<h1 class="font-h1 text-h1 text-primary mb-2">My Wishlist</h1>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">3 Items</p>
+<div class="w-16 h-[2px] bg-primary-container mt-4"></div>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter">
+<!-- Product Card 1 -->
+<div class="group flex flex-col bg-[#F0E4D0] border border-[#E7DCC8] rounded hover:shadow-[0_4px_20px_rgba(28,28,24,0.05)] transition-shadow duration-300 relative overflow-hidden">
+<button aria-label="Remove from Wishlist" class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-on-surface hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+<div class="aspect-[4/5] overflow-hidden bg-white">
+<img alt="Gold Filigree Necklace" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="A highly detailed close-up product photograph of an exquisite 22k gold necklace featuring intricate filigree work and small ruby accents. The jewelry rests on a smooth, slightly warm champagne-colored silk surface. The lighting is soft and directional, creating a premium, luxurious commercial aesthetic that emphasizes the craftsmanship and shine of the gold." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQprau-mF9ucQrCm5mNVlQJrjC1m9X1PxJoMIc5AxEh42ZKTKRN04NAt2CZrd44_OlBiTmfUnmqf38PXNI_AfW1xkNtHekJyu4zTgWjinYd-fQOOW3HoVdWMVwIewilLI_7PzZb-JJM2iYSt0TVzowHCiPu9iwqpVrWNIb_nLCI83L7stH1h88bY1WcEJq-phxDDbo_pN5WV8e5uMDaiG-mqhQ-8BW0KyjkJxED51xGg6kZTZHWx53"/>
+</div>
+<div class="p-4 flex flex-col flex-grow">
+<div class="mb-2">
+<span class="inline-block px-2 py-1 border border-outline text-on-surface-variant font-meta text-meta uppercase tracking-wider rounded-sm mb-2">22K Gold</span>
+</div>
+<h3 class="font-h3 text-[18px] text-primary mb-1 leading-snug">Heritage Filigree Choker</h3>
+<p class="font-meta text-meta text-on-surface-variant mb-4">SKU: GLD-CH-092</p>
+<div class="mt-auto pt-4 border-t border-[#E7DCC8] flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface">Weight: 42.5g</span>
+<span class="font-body-md text-body-md font-medium text-primary">₹ 2,45,000</span>
+</div>
+<button class="w-full bg-primary-container text-white font-label-md text-label-md uppercase tracking-wider py-3 px-4 rounded hover:bg-primary transition-colors hover:shadow-[0_4px_20px_rgba(28,28,24,0.05)]">
+                            Add to Cart
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="group flex flex-col bg-[#F0E4D0] border border-[#E7DCC8] rounded hover:shadow-[0_4px_20px_rgba(28,28,24,0.05)] transition-shadow duration-300 relative overflow-hidden">
+<button aria-label="Remove from Wishlist" class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-on-surface hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+<div class="aspect-[4/5] overflow-hidden bg-white">
+<img alt="Diamond Solitaire Ring" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="A pristine macro photograph of a solitaire diamond ring set in 18k white gold, placed gracefully on a soft beige marble pedestal. The lighting is crisp and studio-quality, creating brilliant refractions within the diamond and sharp, clean highlights on the metal, reflecting a sophisticated, minimalist corporate modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFG5k-QK5ljigcC6Jvcbp3xcHKTduI9zfzbWVo0WkzMk0dgDiwbteqzC3gGczMAK-MbJ1FM2xpquUl-4VWAXhNEfpGxxU0QkM9He8Bh3Y29nP4JgKKdL006dLUZNuuY79pt6dJj0r9N82TKFmG60Q4RbSxzvGPZhktcAV82TBtpdxhbYn8rLHimmS_bqMZFBa-1wNfPL_bpsLiIbsGC3Xzt4ePjrX0mmdN27_WvjIRviHHqbi4wpcw"/>
+</div>
+<div class="p-4 flex flex-col flex-grow">
+<div class="mb-2">
+<span class="inline-block px-2 py-1 border border-outline text-on-surface-variant font-meta text-meta uppercase tracking-wider rounded-sm mb-2">VVS1 Diamond</span>
+</div>
+<h3 class="font-h3 text-[18px] text-primary mb-1 leading-snug">Eternity Solitaire Ring</h3>
+<p class="font-meta text-meta text-on-surface-variant mb-4">SKU: DIA-RG-114</p>
+<div class="mt-auto pt-4 border-t border-[#E7DCC8] flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface">Size: 12</span>
+<span class="font-body-md text-body-md font-medium text-primary">₹ 1,85,500</span>
+</div>
+<button class="w-full bg-primary-container text-white font-label-md text-label-md uppercase tracking-wider py-3 px-4 rounded hover:bg-primary transition-colors hover:shadow-[0_4px_20px_rgba(28,28,24,0.05)]">
+                            Add to Cart
+                        </button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="group flex flex-col bg-[#F0E4D0] border border-[#E7DCC8] rounded hover:shadow-[0_4px_20px_rgba(28,28,24,0.05)] transition-shadow duration-300 relative overflow-hidden">
+<button aria-label="Remove from Wishlist" class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur-sm rounded-full text-on-surface hover:text-error transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="close">close</span>
+</button>
+<div class="aspect-[4/5] overflow-hidden bg-white">
+<img alt="Silver Jhumka Earrings" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out" data-alt="An elegant editorial shot of a pair of traditional Indian Jhumka earrings crafted from oxidized silver with tiny turquoise bead drops. The earrings are suspended against a very light, warm ivory backdrop. The lighting is diffused, casting subtle shadows that highlight the ornate antique finish, fitting a premium artisanal brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHPJnLCyCG2S0Sly2UTBYR5gIhldx0ZqaiVV36NIwslRS6h277JxEmHwCIPQFfVYwojwuVvPvKOO2NTvA8aDD4ImueRYzaEkvtuCwBPN5keSV-P29w_8QYDpIWYMFN0sXaOEdecx-KgBH4LkxZmdJoqKAmh61ZgzaKMG13n2w1gPonsRI_qUtBO6f6135wf_9YZq_TY65fjvzMzEdmRETuuE3PzAGg8DE_vxQ103LokEBQeh85gTCD"/>
+</div>
+<div class="p-4 flex flex-col flex-grow">
+<div class="mb-2">
+<span class="inline-block px-2 py-1 border border-outline text-on-surface-variant font-meta text-meta uppercase tracking-wider rounded-sm mb-2">925 Silver</span>
+</div>
+<h3 class="font-h3 text-[18px] text-primary mb-1 leading-snug">Antique Motif Jhumkas</h3>
+<p class="font-meta text-meta text-on-surface-variant mb-4">SKU: SLV-ER-045</p>
+<div class="mt-auto pt-4 border-t border-[#E7DCC8] flex flex-col gap-3">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface">Weight: 18g</span>
+<span class="font-body-md text-body-md font-medium text-primary">₹ 12,400</span>
+</div>
+<button class="w-full bg-primary-container text-white font-label-md text-label-md uppercase tracking-wider py-3 px-4 rounded hover:bg-primary transition-colors hover:shadow-[0_4px_20px_rgba(28,28,24,0.05)]">
+                            Add to Cart
+                        </button>
+</div>
+</div>
+</div>
+<!-- Conceptual Empty State Placeholder (Visible only if no items, currently hidden for this layout) -->
+<!-- 
+            <div class="col-span-full flex flex-col items-center justify-center py-20 text-center">
+                <span class="material-symbols-outlined text-6xl text-outline-variant mb-4" data-icon="heart_broken">heart_broken</span>
+                <h2 class="font-h2 text-h2 text-primary mb-2">Your wishlist is empty</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-6 max-w-md">Discover exquisite pieces and save them here for later.</p>
+                <button class="bg-transparent border border-primary text-primary font-label-md text-label-md uppercase tracking-wider py-3 px-8 rounded hover:bg-surface-container-low transition-colors">
+                    Explore Collections
+                </button>
+            </div> 
+            -->
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-lg px-gutter max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-4 gap-md bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant">
+<div class="flex flex-col gap-4 md:col-span-1">
+<span class="font-h2 text-h2 text-primary">Om Shilpi Jewels</span>
+<p class="font-meta text-meta text-on-surface-variant">Exquisite Indian Artistry</p>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-primary uppercase">Links</h4>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80" href="#">Shop</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80" href="#">Customer Care</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80" href="#">About</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-primary uppercase">Support</h4>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80" href="#">Policies</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80" href="#">Contact Us</a>
+</div>
+<div class="flex flex-col gap-3">
+<h4 class="font-label-md text-label-md text-primary uppercase">Newsletter</h4>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-opacity hover:opacity-80" href="#">Newsletter</a>
+</div>
+<div class="col-span-1 md:col-span-4 mt-8 pt-4 border-t border-outline-variant text-center">
+<p class="font-meta text-meta text-on-surface-variant">© 2024 Om Shilpi Jewels. All Rights Reserved.</p>
+</div>
+</footer>
+<!-- BottomNavBar (Visible on Mobile, Hidden on md+) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center py-sm md:hidden bg-surface border-t bg-surface-container-lowest dark:bg-surface-dim docked full-width bottom-0 z-50 rounded-t-xl border-t border-outline-variant shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:bg-secondary-container/20 p-2 rounded w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="storefront">storefront</span>
+<span class="font-meta text-[10px]">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-bold hover:bg-secondary-container/20 p-2 rounded w-16 transform scale-95 opacity-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1 filled-icon" data-icon="favorite">favorite</span>
+<span class="font-meta text-[10px]">Wishlist</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:bg-secondary-container/20 p-2 rounded w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-meta text-[10px]">Account</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-secondary-fixed-variant hover:bg-secondary-container/20 p-2 rounded w-16" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="shopping_cart">shopping_cart</span>
+<span class="font-meta text-[10px]">Cart</span>
+</a>
+</nav>
+</body></html>

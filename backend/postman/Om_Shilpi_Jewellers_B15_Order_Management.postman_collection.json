@@ -1,0 +1,212 @@
+{
+  "info": {
+    "_postman_id": "b15-order-management-collection",
+    "name": "Om Shilpi Jewellers - B15 Order Management APIs",
+    "description": "Postman test collection for Phase B15 Order Management APIs covering Customer Order History, Customer Order Detail, Ownership Protection, Admin Order Listing, Admin Order Detail, Validated Status Transitions, and B1-B14 Regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Customer List Own Orders (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/orders?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "02 Customer Get Own Order Detail (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/orders/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders", "{{orderId}}"]
+        }
+      }
+    },
+    {
+      "name": "03 Customer Ownership Check - Unauthorized Order Access (404)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerTokenB}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/orders/{{orderIdOfCustomerA}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders", "{{orderIdOfCustomerA}}"]
+        }
+      }
+    },
+    {
+      "name": "04 Unauthenticated Customer Order Access Denied (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders"]
+        }
+      }
+    },
+    {
+      "name": "05 Admin List All Orders (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "06 Admin Filter Orders By Status (?status=CONFIRMED)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders?status=CONFIRMED",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders"],
+          "query": [
+            { "key": "status", "value": "CONFIRMED" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "07 Admin Get Specific Order Detail (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders/{{orderId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders", "{{orderId}}"]
+        }
+      }
+    },
+    {
+      "name": "08 Admin Valid Status Transition (CONFIRMED -> PROCESSING)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"PROCESSING\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders", "{{orderId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "09 Admin Invalid Status Transition Rejection (400)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"PENDING\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders", "{{orderId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "10 Admin Update Status - Invalid Status Enum Value (400)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"NON_EXISTENT_STATUS\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders/{{orderId}}/status",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders", "{{orderId}}", "status"]
+        }
+      }
+    },
+    {
+      "name": "11 Customer Admin Endpoint Access Denied (403)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders"]
+        }
+      }
+    },
+    {
+      "name": "12 Unauthenticated Admin Endpoint Access Denied (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/admin/orders",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "orders"]
+        }
+      }
+    },
+    {
+      "name": "13 B1-B14 Regression Check (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

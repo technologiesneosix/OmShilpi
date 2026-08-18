@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { requireAuth, requireRole } from '../middleware/auth.middleware';
+import { requireAuth } from '../middleware/auth.middleware';
 import { AddressController } from '../controllers/address.controller';
 
 const router = Router();
 
-// All Address endpoints require CUSTOMER authentication
-router.use(requireAuth, requireRole('CUSTOMER'));
+// All Address endpoints require authentication
+router.use(requireAuth);
 
 /**
  * @route POST /api/v1/addresses

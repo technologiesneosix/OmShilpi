@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { requireAuth, requireRole } from '../middleware/auth.middleware';
+import { requireAuth } from '../middleware/auth.middleware';
 import { CheckoutController } from '../controllers/checkout.controller';
 
 const router = Router();
 
-// All checkout endpoints require CUSTOMER authentication
-router.use(requireAuth, requireRole('CUSTOMER'));
+// All checkout endpoints require authentication
+router.use(requireAuth);
 
 /**
  * @route POST /api/v1/checkout/preview

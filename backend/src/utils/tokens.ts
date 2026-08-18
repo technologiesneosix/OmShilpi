@@ -35,8 +35,10 @@ export const generateRefreshToken = (payload: { userId: string }): string => {
  */
 export const verifyAccessToken = (token: string): JwtAuthPayload | null => {
   try {
-    return jwt.verify(token, env.JWT_ACCESS_SECRET) as JwtAuthPayload;
-  } catch {
+    const cleanToken = token.replace(/["'\s\n\r\t]/g, '').trim();
+    return jwt.verify(cleanToken, env.JWT_ACCESS_SECRET) as JwtAuthPayload;
+  } catch (error) {
+    console.error('JWT Verification Failed:', error instanceof Error ? error.message : error);
     return null;
   }
 };

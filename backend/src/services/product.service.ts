@@ -43,7 +43,9 @@ export class ProductService {
       ? input.slug.trim().toLowerCase()
       : this.slugify(input.name);
 
-    const sku = input.sku.trim().toUpperCase();
+    const sku = input.sku && input.sku.trim() !== ''
+      ? input.sku.trim().toUpperCase()
+      : 'OMS-' + Math.floor(100000 + Math.random() * 900000);
 
     // Check category foreign key if provided
     if (input.categoryId) {
@@ -81,7 +83,14 @@ export class ProductService {
       throw ApiError.conflict(`Product with slug '${slug}' already exists`, 'PRODUCT_SLUG_EXISTS');
     }
 
-    return prisma.product.create({
+    const initialQuantity = input.quantity !== undefined && input.quantity !== null && input.quantity !== ''
+      ? Number(input.quantity)
+      : 10;
+    const initialThreshold = input.lowStockThreshold !== undefined && input.lowStockThreshold !== null && input.lowStockThreshold !== ''
+      ? Number(input.lowStockThreshold)
+      : 5;
+
+    const product = await prisma.product.create({
       data: {
         name: input.name.trim(),
         slug,
@@ -90,6 +99,8 @@ export class ProductService {
         description: input.description ? input.description.trim() : null,
         price: new Prisma.Decimal(String(input.price)),
         compareAtPrice: this.toDecimal(input.compareAtPrice),
+        makingCharge: this.toDecimal(input.makingCharge),
+        taxRate: input.taxRate !== undefined && input.taxRate !== null && input.taxRate !== '' ? new Prisma.Decimal(String(input.taxRate)) : new Prisma.Decimal('3.00'),
 
         // Jewellery specifications
         metal: input.metal ? input.metal.trim() : null,
@@ -106,13 +117,37 @@ export class ProductService {
         isActive: input.isActive ?? true,
         isFeatured: input.isFeatured ?? false,
         isNewArrival: input.isNewArrival ?? false,
+
+        // Auto-create inventory record so product shows in Inventory table immediately
+        inventory: {
+          create: {
+            quantity: initialQuantity,
+            lowStockThreshold: initialThreshold,
+          },
+        },
       },
       include: {
         category: { select: { id: true, name: true, slug: true } },
         collection: { select: { id: true, name: true, slug: true } },
+        inventory: true,
         images: true,
       },
     });
+
+    if (initialQuantity > 0 && product.inventory) {
+      await prisma.inventoryTransaction.create({
+        data: {
+          inventoryId: product.inventory.id,
+          productId: product.id,
+          change: initialQuantity,
+          quantityBefore: 0,
+          quantityAfter: initialQuantity,
+          reason: 'INITIAL_STOCK',
+        },
+      }).catch(() => null);
+    }
+
+    return product;
   }
 
   /**
@@ -125,6 +160,11 @@ export class ProductService {
     const where: Prisma.ProductWhereInput = {
       isActive: true,
     };
+
+    // Metal filter (Gold, Diamond, Silver, etc.)
+    if (query.metal && query.metal.trim()) {
+      where.metal = query.metal.trim();
+    }
 
     // Category filter by ID or slug
     if (query.categoryId) {
@@ -274,6 +314,10 @@ export class ProductService {
       where.isActive = false;
     }
 
+    if (query.metal && query.metal.trim()) {
+      where.metal = query.metal.trim();
+    }
+
     if (query.categoryId) {
       where.categoryId = query.categoryId;
     } else if (query.category) {
@@ -416,6 +460,8 @@ export class ProductService {
 
     if (input.price !== undefined) data.price = new Prisma.Decimal(String(input.price));
     if (input.compareAtPrice !== undefined) data.compareAtPrice = this.toDecimal(input.compareAtPrice);
+    if (input.makingCharge !== undefined) data.makingCharge = this.toDecimal(input.makingCharge);
+    if (input.taxRate !== undefined) data.taxRate = input.taxRate ? new Prisma.Decimal(String(input.taxRate)) : new Prisma.Decimal('3.00');
 
     if (input.metal !== undefined) data.metal = input.metal ? input.metal.trim() : null;
     if (input.purity !== undefined) data.purity = input.purity ? input.purity.trim() : null;

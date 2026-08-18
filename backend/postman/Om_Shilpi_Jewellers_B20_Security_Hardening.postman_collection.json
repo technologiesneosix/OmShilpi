@@ -1,0 +1,164 @@
+{
+  "info": {
+    "_postman_id": "b20-security-hardening-collection",
+    "name": "Om Shilpi Jewellers - B20 Security Hardening",
+    "description": "Postman test suite for Phase B20 Security Hardening covering Authentication Protection (401 on missing/fake JWT), RBAC Authorization (403 on customer accessing admin routes), Price Manipulation Protection, Quantity Manipulation Protection, User Spoofing / Resource Ownership Verification (404 on accessing another user's order), Fake Razorpay Payment Signature Rejection, Unsafe Protocol / XSS Payload Rejection, Secrets Protection, and B1-B19 Regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Authentication Protection - No Token (401 Unauthorized)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/cart",
+          "host": ["{{baseUrl}}"],
+          "path": ["cart"]
+        }
+      }
+    },
+    {
+      "name": "02 Authentication Protection - Malformed/Fake Token (401 Unauthorized)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer fake.malformed.jwt.token" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/cart",
+          "host": ["{{baseUrl}}"],
+          "path": ["cart"]
+        }
+      }
+    },
+    {
+      "name": "03 RBAC Authorization - Customer to Admin Endpoint (403 Forbidden)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/dashboard",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "dashboard"]
+        }
+      }
+    },
+    {
+      "name": "04 Quantity Manipulation Protection - Negative Quantity (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": -5\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cart/items",
+          "host": ["{{baseUrl}}"],
+          "path": ["cart", "items"]
+        }
+      }
+    },
+    {
+      "name": "05 Price Manipulation Protection - Ignored Client Price (DB Price Enforced)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"price\": 1,\n  \"total\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/cart/items",
+          "host": ["{{baseUrl}}"],
+          "path": ["cart", "items"]
+        }
+      }
+    },
+    {
+      "name": "06 Resource Ownership Protection - Access Other Customer Order (404 Not Found)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/orders/other_customer_order_id_123",
+          "host": ["{{baseUrl}}"],
+          "path": ["orders", "other_customer_order_id_123"]
+        }
+      }
+    },
+    {
+      "name": "07 Fake Payment Signature Rejection (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"razorpay_order_id\": \"order_mock_123\",\n  \"razorpay_payment_id\": \"pay_mock_123\",\n  \"razorpay_signature\": \"fabricated_fake_signature_hash\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/payments/verify",
+          "host": ["{{baseUrl}}"],
+          "path": ["payments", "verify"]
+        }
+      }
+    },
+    {
+      "name": "08 Unsafe Protocol / XSS Payload Rejection (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Malicious CTA\",\n  \"imageUrl\": \"https://example.com/banner.jpg\",\n  \"ctaLink\": \"javascript:alert('xss')\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/banners",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "banners"]
+        }
+      }
+    },
+    {
+      "name": "09 Invalid ID Format - No Stack Trace (404 Not Found)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/products/fake_product_id_format_123",
+          "host": ["{{baseUrl}}"],
+          "path": ["products", "fake_product_id_format_123"]
+        }
+      }
+    },
+    {
+      "name": "10 B1-B19 Regression Protection (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

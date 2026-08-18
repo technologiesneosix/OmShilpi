@@ -67,13 +67,10 @@ export class PaymentService {
         },
       });
     } catch (error: any) {
-      // Fallback mock order generation if Razorpay API keys are in local offline test mode
-      razorpayOrder = {
-        id: `order_mock_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-        amount: amountInPaise,
-        currency: RAZORPAY_CURRENCY,
-        receipt: order.orderNumber,
-      };
+      throw ApiError.internal(
+        `Failed to create Razorpay Order: ${error?.error?.description || error?.message || 'Razorpay API Error'}`,
+        'RAZORPAY_API_ERROR'
+      );
     }
 
     // Record internal Payment record
@@ -104,15 +101,21 @@ export class PaymentService {
    * Transactionally marks Payment and Order as PAID & CONFIRMED.
    */
   static async verifyPayment(userId: string, input: VerifyPaymentInput) {
+    const targetOrderId = input.orderId || input.razorpay_order_id;
+
     const order = await prisma.order.findFirst({
       where: {
-        OR: [{ id: input.orderId }, { orderNumber: input.orderId }],
+        OR: [
+          { id: targetOrderId },
+          { orderNumber: targetOrderId },
+          { payments: { some: { providerOrderId: input.razorpay_order_id } } },
+        ],
       },
       include: { payments: true },
     });
 
     if (!order || (order.userId && order.userId !== userId)) {
-      throw ApiError.notFound(`Order with ID '${input.orderId}' not found`, 'ORDER_NOT_FOUND');
+      throw ApiError.notFound(`Order not found`, 'ORDER_NOT_FOUND');
     }
 
     const payment = order.payments.find(
@@ -248,12 +251,6 @@ export class PaymentService {
               paymentStatus: PaymentStatus.PAID,
             },
           });
-
-          if (eventId) {
-            await tx.paymentWebhookEvent.create({
-              data: { eventId, eventType },
-            });
-          }
         });
       }
     } else if (eventType === 'payment.failed') {
@@ -272,14 +269,14 @@ export class PaymentService {
             where: { id: payment.orderId },
             data: { paymentStatus: PaymentStatus.FAILED },
           });
-
-          if (eventId) {
-            await tx.paymentWebhookEvent.create({
-              data: { eventId, eventType },
-            });
-          }
         });
       }
+    }
+
+    if (eventId) {
+      await prisma.paymentWebhookEvent.create({
+        data: { eventId, eventType: eventType || 'webhook' },
+      }).catch(() => {});
     }
 
     return { acknowledged: true };

@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { requireAuth, requireRole } from '../middleware/auth.middleware';
+import { requireAuth } from '../middleware/auth.middleware';
 import { WishlistController } from '../controllers/wishlist.controller';
 
 const router = Router();
 
-// Require CUSTOMER authentication for all wishlist operations
-router.use(requireAuth, requireRole('CUSTOMER'));
+// Require authentication for all wishlist operations
+router.use(requireAuth);
 
 /**
  * @route GET /api/v1/wishlist

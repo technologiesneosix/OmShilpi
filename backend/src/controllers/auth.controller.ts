@@ -23,7 +23,7 @@ export const signup = asyncHandler(async (req: Request, res: Response) => {
   res.cookie(env.COOKIE_NAME, result.accessToken, getCookieOptions(ACCESS_COOKIE_MAX_AGE));
   res.cookie(env.REFRESH_COOKIE_NAME, result.refreshToken, getCookieOptions(REFRESH_COOKIE_MAX_AGE));
 
-  ApiResponse.success(res, 'Account created successfully', { user: result.user }, 201);
+  ApiResponse.success(res, 'Account created successfully', { user: result.user, accessToken: result.accessToken }, 201);
 });
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
@@ -33,7 +33,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   res.cookie(env.COOKIE_NAME, result.accessToken, getCookieOptions(ACCESS_COOKIE_MAX_AGE));
   res.cookie(env.REFRESH_COOKIE_NAME, result.refreshToken, getCookieOptions(REFRESH_COOKIE_MAX_AGE));
 
-  ApiResponse.success(res, 'Login successful', { user: result.user }, 200);
+  ApiResponse.success(res, 'Login successful', { user: result.user, accessToken: result.accessToken }, 200);
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {

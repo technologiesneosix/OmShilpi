@@ -1,0 +1,304 @@
+{
+  "info": {
+    "_postman_id": "b16-contact-enquiry-system-collection",
+    "name": "Om Shilpi Jewellers - B16 Contact & Enquiry System",
+    "description": "Postman test collection for Phase B16 Contact & Enquiry System covering Public Enquiry Submission (POST /api/v1/enquiries), Input Validation, XSS Safety, Admin Enquiry Listing (GET /api/v1/admin/enquiries), Admin Status Update (PATCH /api/v1/admin/enquiries/:id), Status Workflow (NEW -> IN_PROGRESS -> RESOLVED -> CLOSED), RBAC Authorization, and B1-B15 Regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Public Submit Enquiry - Success (201 Created)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Customer B16\",\n  \"email\": \"test.customer.b16@example.com\",\n  \"phone\": \"9876543210\",\n  \"subject\": \"Product Enquiry\",\n  \"message\": \"I would like more information about your gold jewellery collection.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "02 Validation - Missing Name (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"subject\": \"Product Enquiry\",\n  \"message\": \"Looking for rings.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "03 Validation - Invalid Email Format (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"invalid-email-format\",\n  \"subject\": \"Product Enquiry\",\n  \"message\": \"Looking for rings.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "04 Validation - Missing Subject (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"test@example.com\",\n  \"message\": \"Looking for rings.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "05 Validation - Missing Message (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"test@example.com\",\n  \"subject\": \"Product Enquiry\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "06 Validation - Empty Message String (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"test@example.com\",\n  \"subject\": \"Product Enquiry\",\n  \"message\": \"    \"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "07 XSS Payload Handling (Safely stored plain text)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"<script>alert('xss')</script>\",\n  \"email\": \"xss@example.com\",\n  \"subject\": \"<img src=x onerror=alert(1)>\",\n  \"message\": \"Testing safe plain text storage without executing HTML/JS.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["enquiries"]
+        }
+      }
+    },
+    {
+      "name": "08 Admin List Enquiries (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries"],
+          "query": [
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "09 Admin Filter Enquiries By Status (?status=NEW)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries?status=NEW",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries"],
+          "query": [
+            { "key": "status", "value": "NEW" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "10 Admin Update Enquiry Status to IN_PROGRESS (200 OK)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries/{{enquiryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries", "{{enquiryId}}"]
+        }
+      }
+    },
+    {
+      "name": "11 Admin Update Enquiry Status to RESOLVED (200 OK)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"RESOLVED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries/{{enquiryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries", "{{enquiryId}}"]
+        }
+      }
+    },
+    {
+      "name": "12 Admin Update Enquiry Status to CLOSED (200 OK)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"CLOSED\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries/{{enquiryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries", "{{enquiryId}}"]
+        }
+      }
+    },
+    {
+      "name": "13 Admin Update Status - Invalid Status Enum Value (400)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"INVALID\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries/{{enquiryId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries", "{{enquiryId}}"]
+        }
+      }
+    },
+    {
+      "name": "14 Customer Access to Admin Enquiries Denied (403)",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries"]
+        }
+      }
+    },
+    {
+      "name": "15 Unauthenticated Access to Admin Enquiries Denied (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries"]
+        }
+      }
+    },
+    {
+      "name": "16 Non-Existent Enquiry ID Update (404 Not Found)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/enquiries/non_existent_enquiry_id",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "enquiries", "non_existent_enquiry_id"]
+        }
+      }
+    },
+    {
+      "name": "17 B1-B15 Regression Protection (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

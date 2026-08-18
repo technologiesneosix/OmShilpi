@@ -39,5 +39,5 @@ export const updateCollectionHandler = asyncHandler(async (req: Request, res: Re
 export const deleteCollectionHandler = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id as string;
   const result = await CollectionService.deleteCollection(id);
-  ApiResponse.success(res, result.message, { action: result.action, collection: result.collection }, 200);
+  ApiResponse.success(res, result.message, { action: result.action }, 200);
 });

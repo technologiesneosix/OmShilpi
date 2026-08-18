@@ -17,6 +17,7 @@ import {
   ResetPasswordInput,
 } from '../validators/auth.validator';
 import { AuthUserPayload } from '../types';
+import { EmailService } from './email.service';
 
 export class AuthService {
   /**
@@ -61,6 +62,9 @@ export class AuthService {
 
     // Generate tokens & persist refresh token
     const tokens = await this.createAuthSession(user);
+
+    // Trigger Welcome Email (Decoupled & Fail-Safe)
+    EmailService.sendWelcomeEmail({ name: user.name, email: user.email }).catch(() => {});
 
     return {
       user,
@@ -189,6 +193,9 @@ export class AuthService {
         expiresAt,
       },
     });
+
+    // Trigger Password Reset Email (Decoupled & Fail-Safe)
+    EmailService.sendPasswordResetEmail({ name: user.name, email: user.email }, rawToken).catch(() => {});
 
     // In development mode only, return devToken for non-destructive local testing
     return {

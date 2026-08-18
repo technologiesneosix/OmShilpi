@@ -9,7 +9,7 @@ export const createProductSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Slug must contain only lowercase alphanumeric characters and hyphens')
     .optional()
     .or(z.literal('')),
-  sku: z.string().trim().min(2, 'SKU must be at least 2 characters long'),
+  sku: z.string().trim().min(2, 'SKU must be at least 2 characters long').optional().or(z.literal('')).nullable(),
   shortDescription: z.string().trim().optional(),
   description: z.string().trim().optional(),
 
@@ -24,6 +24,18 @@ export const createProductSchema = z.object({
     .or(z.string().regex(/^\d+(?:\.\d{1,2})?$/, 'Compare-at price must be a valid positive decimal number'))
     .optional()
     .nullable(),
+  makingCharge: z
+    .number()
+    .nonnegative('Making charge cannot be negative')
+    .or(z.string())
+    .optional()
+    .nullable(),
+  taxRate: z
+    .number()
+    .nonnegative('Tax rate cannot be negative')
+    .or(z.string())
+    .optional()
+    .nullable(),
 
   // Jewellery specifications
   metal: z.string().trim().optional().nullable(),
@@ -34,12 +46,14 @@ export const createProductSchema = z.object({
   stoneWeight: z.number().nonnegative().or(z.string()).optional().nullable(),
   certification: z.string().trim().optional().nullable(),
 
-  // Relationships & merchandising flags
+  // Relationships, stock & merchandising flags
   categoryId: z.string().trim().optional().nullable(),
   collectionId: z.string().trim().optional().nullable(),
   isActive: z.boolean().default(true),
   isFeatured: z.boolean().default(false),
   isNewArrival: z.boolean().default(false),
+  quantity: z.number().int().nonnegative().or(z.string()).optional().nullable(),
+  lowStockThreshold: z.number().int().nonnegative().or(z.string()).optional().nullable(),
 });
 
 export const updateProductSchema = z.object({
@@ -66,6 +80,18 @@ export const updateProductSchema = z.object({
     .or(z.string().regex(/^\d+(?:\.\d{1,2})?$/, 'Compare-at price must be a valid positive decimal number'))
     .optional()
     .nullable(),
+  makingCharge: z
+    .number()
+    .nonnegative('Making charge cannot be negative')
+    .or(z.string())
+    .optional()
+    .nullable(),
+  taxRate: z
+    .number()
+    .nonnegative('Tax rate cannot be negative')
+    .or(z.string())
+    .optional()
+    .nullable(),
 
   // Jewellery specifications
   metal: z.string().trim().optional().nullable(),
@@ -82,6 +108,8 @@ export const updateProductSchema = z.object({
   isActive: z.boolean().optional(),
   isFeatured: z.boolean().optional(),
   isNewArrival: z.boolean().optional(),
+  quantity: z.number().int().nonnegative().or(z.string()).optional().nullable(),
+  lowStockThreshold: z.number().int().nonnegative().or(z.string()).optional().nullable(),
 });
 
 export const productIdParamSchema = z.object({
@@ -96,6 +124,7 @@ export const publicProductQuerySchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
   search: z.string().optional(),
+  metal: z.string().optional(),
   category: z.string().optional(),
   categoryId: z.string().optional(),
   collection: z.string().optional(),
@@ -112,6 +141,7 @@ export const adminProductQuerySchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
   search: z.string().optional(),
+  metal: z.string().optional(),
   category: z.string().optional(),
   categoryId: z.string().optional(),
   collection: z.string().optional(),

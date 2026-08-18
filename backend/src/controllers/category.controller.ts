@@ -39,5 +39,5 @@ export const updateCategoryHandler = asyncHandler(async (req: Request, res: Resp
 export const deleteCategoryHandler = asyncHandler(async (req: Request, res: Response) => {
   const id = req.params.id as string;
   const result = await CategoryService.deleteCategory(id);
-  ApiResponse.success(res, result.message, { action: result.action, category: result.category }, 200);
+  ApiResponse.success(res, result.message, { action: result.action }, 200);
 });

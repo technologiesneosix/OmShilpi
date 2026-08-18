@@ -4,6 +4,7 @@ import { ApiError } from '../utils/apiError';
 import { CheckoutPreviewInput, CheckoutInput } from '../validators/checkout.validator';
 import { AddressService } from './address.service';
 import { CartService } from './cart.service';
+import { EmailService } from './email.service';
 
 // In-memory Idempotency Cache for Checkout Protection (Key -> Order Payload, TTL 10 mins)
 const idempotencyCache = new Map<string, { order: any; timestamp: number }>();
@@ -182,7 +183,8 @@ export class CheckoutService {
     }
 
     // Execute atomic transaction for inventory deduction, order creation, audit logging, and cart clearing
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(
+      async (tx) => {
       let subtotal = 0;
       const orderItemsData = [];
 
@@ -303,7 +305,7 @@ export class CheckoutService {
       });
 
       return createdOrder;
-    });
+    }, { timeout: 20000 });
 
     if (idempotencyKey) {
       idempotencyCache.set(`${userId}:${idempotencyKey}`, {
@@ -311,6 +313,13 @@ export class CheckoutService {
         timestamp: Date.now(),
       });
     }
+
+    // Trigger Order Confirmation Email (Decoupled & Fail-Safe)
+    prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } }).then((user) => {
+      if (user?.email) {
+        EmailService.sendOrderConfirmationEmail(order, user.email, user.name).catch(() => {});
+      }
+    }).catch(() => {});
 
     return order;
   }

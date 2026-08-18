@@ -1,0 +1,237 @@
+{
+  "info": {
+    "_postman_id": "b18-homepage-cms-apis-collection",
+    "name": "Om Shilpi Jewellers - B18 Homepage & CMS APIs",
+    "description": "Postman test collection for Phase B18 Homepage & CMS APIs covering Banners (GET /banners, POST/PATCH/DELETE /admin/banners), Testimonials (GET /testimonials, POST/PATCH/DELETE /admin/testimonials), Homepage Content (GET /content/home, PATCH /admin/content/home), Sorting, Active/Inactive filtering, RBAC authorization, and B1-B16 Regression.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Public GET Banners (200 OK - Active Only)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/banners",
+          "host": ["{{baseUrl}}"],
+          "path": ["banners"]
+        }
+      }
+    },
+    {
+      "name": "02 Admin Create Banner - Active (201 Created)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Timeless Gold B18\",\n  \"subtitle\": \"Crafted for Every Celebration\",\n  \"description\": \"Discover our premium gold jewellery collection.\",\n  \"imageUrl\": \"https://example.com/banner1.jpg\",\n  \"ctaText\": \"Shop Collection\",\n  \"ctaLink\": \"/collections/gold-jewellery\",\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/banners",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "banners"]
+        }
+      }
+    },
+    {
+      "name": "03 Admin Create Banner - Inactive (201 Created)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Inactive Festive Sale\",\n  \"imageUrl\": \"https://example.com/festive.jpg\",\n  \"sortOrder\": 2,\n  \"isActive\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/banners",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "banners"]
+        }
+      }
+    },
+    {
+      "name": "04 Admin Update Banner (200 OK)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Luxury Gold Collection Updated\",\n  \"sortOrder\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/banners/{{bannerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "banners", "{{bannerId}}"]
+        }
+      }
+    },
+    {
+      "name": "05 Admin Delete Banner (200 OK)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/banners/{{bannerId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "banners", "{{bannerId}}"]
+        }
+      }
+    },
+    {
+      "name": "06 Public GET Testimonials (200 OK - Active Only)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/testimonials",
+          "host": ["{{baseUrl}}"],
+          "path": ["testimonials"]
+        }
+      }
+    },
+    {
+      "name": "07 Admin Create Testimonial (201 Created)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"B18 Test Customer\",\n  \"designation\": \"Verified Customer\",\n  \"content\": \"Beautiful craftsmanship and excellent service.\",\n  \"rating\": 5,\n  \"imageUrl\": \"https://example.com/customer.jpg\",\n  \"sortOrder\": 1,\n  \"isActive\": true\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/testimonials",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "testimonials"]
+        }
+      }
+    },
+    {
+      "name": "08 Admin Update Testimonial (200 OK)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"Amazing craftsmanship and prompt support.\",\n  \"rating\": 5\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/testimonials/{{testimonialId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "testimonials", "{{testimonialId}}"]
+        }
+      }
+    },
+    {
+      "name": "09 Admin Delete Testimonial (200 OK)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/admin/testimonials/{{testimonialId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "testimonials", "{{testimonialId}}"]
+        }
+      }
+    },
+    {
+      "name": "10 Public GET Homepage Content (200 OK)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/content/home",
+          "host": ["{{baseUrl}}"],
+          "path": ["content", "home"]
+        }
+      }
+    },
+    {
+      "name": "11 Admin PATCH Homepage Content (200 OK)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hero\": {\n    \"title\": \"Timeless Elegance B18\",\n    \"subtitle\": \"Crafted for Every Celebration\",\n    \"ctaText\": \"Shop Now\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/content/home",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "content", "home"]
+        }
+      }
+    },
+    {
+      "name": "12 Customer Access to Admin Banners Denied (403)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{customerToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Unauthorized Banner\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/banners",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "banners"]
+        }
+      }
+    },
+    {
+      "name": "13 Unauthenticated Access to Admin CMS Denied (401)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hero\": { \"title\": \"Hacked\" }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/admin/content/home",
+          "host": ["{{baseUrl}}"],
+          "path": ["admin", "content", "home"]
+        }
+      }
+    },
+    {
+      "name": "14 B1-B16 Regression Protection (Health Check)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    }
+  ]
+}

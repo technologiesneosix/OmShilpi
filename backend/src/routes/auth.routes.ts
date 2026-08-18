@@ -25,7 +25,7 @@ const router = Router();
 
 // Public Authentication Endpoints
 router.post(
-  '/signup',
+  ['/signup', '/register'],
   authRateLimiter,
   validateRequest({ body: signupSchema }),
   signup

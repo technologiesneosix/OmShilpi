@@ -15,10 +15,15 @@ export const requireAuth = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    let token: string | undefined = req.cookies?.[env.COOKIE_NAME];
+    let token: string | undefined;
 
-    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
-      token = req.headers.authorization.split(' ')[1];
+    if (req.headers.authorization?.startsWith('Bearer ')) {
+      const rawToken = req.headers.authorization.slice(7).trim();
+      token = rawToken.replace(/["'\s\n\r\t]/g, '');
+    }
+
+    if (!token && req.cookies?.[env.COOKIE_NAME]) {
+      token = req.cookies[env.COOKIE_NAME];
     }
 
     if (!token) {

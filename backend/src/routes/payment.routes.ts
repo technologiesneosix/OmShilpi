@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
-import { requireAuth, requireRole } from '../middleware/auth.middleware';
+import { requireAuth } from '../middleware/auth.middleware';
+import { paymentRateLimiter } from '../middleware/rateLimiter.middleware';
 import { PaymentController } from '../controllers/payment.controller';
 
 const router = Router();
@@ -15,8 +16,8 @@ router.post(
   PaymentController.handleWebhook
 );
 
-// Protected Customer Routes
-router.use(requireAuth, requireRole('CUSTOMER'));
+// Protected Payment Routes (Authenticated Users)
+router.use(requireAuth);
 
 /**
  * @route POST /api/v1/payments/create-order
@@ -30,6 +31,6 @@ router.post('/create-order', PaymentController.createRazorpayOrder);
  * @desc Verify Razorpay payment signature server-side using Key Secret
  * @access Customer
  */
-router.post('/verify', PaymentController.verifyPayment);
+router.post('/verify', paymentRateLimiter, PaymentController.verifyPayment);
 
 export default router;

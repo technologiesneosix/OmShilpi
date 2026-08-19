@@ -7,7 +7,6 @@ import { requestLogger } from './middleware/requestLogger';
 import { notFoundHandler } from './middleware/notFound.middleware';
 import { errorHandler } from './middleware/error.middleware';
 import v1Router from './routes';
-import path from 'path';
 import { setupSwagger } from './config/swagger';
 
 const app: Application = express();
@@ -60,35 +59,21 @@ app.use(requestLogger);
 // Mount Interactive Swagger API Documentation UI (/api/docs & /api-docs)
 setupSwagger(app as any);
 
-// Serve static frontend assets from public directory
-const publicPath = path.join(process.cwd(), 'public');
-app.use(express.static(publicPath));
+// Root REST API Server Status route
+app.get('/', (_req, res) => {
+  res.json({
+    success: true,
+    message: '🚀 Om Shilpi Jewellers API Server Running',
+    documentation: '/api/docs',
+    healthCheck: '/api/v1/health',
+  });
+});
 
 // API Routes
 app.use('/api/v1', v1Router);
 
 // Root / health check alias for easy verification
 app.get('/api/health', (_req, res) => res.redirect('/api/v1/health'));
-
-// Clean HTML page routing for single-page & multi-page navigation
-app.get('/shop', (_req, res) => res.sendFile(path.join(publicPath, 'shop.html')));
-app.get(['/product', '/product/*'], (_req, res) => res.sendFile(path.join(publicPath, 'product.html')));
-app.get('/login', (_req, res) => res.sendFile(path.join(publicPath, 'login.html')));
-app.get('/register', (_req, res) => res.sendFile(path.join(publicPath, 'register.html')));
-app.get('/account', (_req, res) => res.sendFile(path.join(publicPath, 'account.html')));
-app.get('/addresses', (_req, res) => res.sendFile(path.join(publicPath, 'addresses.html')));
-app.get('/wishlist', (_req, res) => res.sendFile(path.join(publicPath, 'wishlist.html')));
-app.get('/cart', (_req, res) => res.sendFile(path.join(publicPath, 'cart.html')));
-app.get('/checkout', (_req, res) => res.sendFile(path.join(publicPath, 'checkout.html')));
-app.get('/payment-processing', (_req, res) => res.sendFile(path.join(publicPath, 'payment-processing.html')));
-app.get('/order-confirmed', (_req, res) => res.sendFile(path.join(publicPath, 'order-confirmed.html')));
-app.get('/payment-unsuccessful', (_req, res) => res.sendFile(path.join(publicPath, 'payment-unsuccessful.html')));
-app.get('/order-history', (_req, res) => res.sendFile(path.join(publicPath, 'order-history.html')));
-app.get('/contact', (_req, res) => res.sendFile(path.join(publicPath, 'contact.html')));
-app.get('/heritage', (_req, res) => res.sendFile(path.join(publicPath, 'heritage.html')));
-app.get('/journal', (_req, res) => res.sendFile(path.join(publicPath, 'journal.html')));
-app.get('/search', (_req, res) => res.sendFile(path.join(publicPath, 'search.html')));
-app.get(['/admin', '/admin/*'], (_req, res) => res.sendFile(path.join(publicPath, 'admin.html')));
 
 // 404 handler
 app.use(notFoundHandler);

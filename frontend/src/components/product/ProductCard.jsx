@@ -3,11 +3,13 @@ import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Eye } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useDialog } from '../../context/DialogContext';
 import { ScrollReveal } from '../common/ScrollReveal';
 
 export const ProductCard = ({ product, delay = 0 }) => {
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { showAuthModal, showAlert } = useDialog();
   const [adding, setAdding] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
@@ -36,8 +38,13 @@ export const ProductCard = ({ product, delay = 0 }) => {
       setErrorMsg(null);
       await addToCart(product.id, 1);
     } catch (err) {
-      setErrorMsg(err.message || 'Failed to add item');
-      setTimeout(() => setErrorMsg(null), 3000);
+      const msg = err.message || 'Failed to add item';
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('login') || msg.toLowerCase().includes('authenticated')) {
+        showAuthModal(msg);
+      } else {
+        setErrorMsg(msg);
+        setTimeout(() => setErrorMsg(null), 3000);
+      }
     } finally {
       setAdding(false);
     }
@@ -50,7 +57,12 @@ export const ProductCard = ({ product, delay = 0 }) => {
       setWishlistLoading(true);
       await toggleWishlist(product);
     } catch (err) {
-      alert(err.message || 'Failed to update wishlist');
+      const msg = err.message || 'Failed to update wishlist';
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('login') || msg.toLowerCase().includes('authenticated')) {
+        showAuthModal(msg);
+      } else {
+        showAlert(msg, 'Notice', 'error');
+      }
     } finally {
       setWishlistLoading(false);
     }

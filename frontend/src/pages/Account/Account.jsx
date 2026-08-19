@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Package, MapPin, Heart, LogOut, Plus, Trash2, ShieldCheck, Check } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useDialog } from '../../context/DialogContext';
 import { addressApi } from '../../api/address.api';
 import { ordersApi } from '../../api/orders.api';
 
 export const Account = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { showAlert, showConfirm } = useDialog();
 
   const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState([]);
@@ -65,19 +67,24 @@ export const Account = () => {
         isDefault: false,
       });
     } catch (err) {
-      alert(err.message || 'Failed to save address');
+      showAlert(err.message || 'Failed to save address', 'Error', 'error');
     }
   };
 
-  const handleDeleteAddress = async (id) => {
-    if (window.confirm('Are you sure you want to delete this address?')) {
-      try {
-        await addressApi.deleteAddress(id);
-        setAddresses(addresses.filter(a => a.id !== id));
-      } catch (err) {
-        alert(err.message || 'Could not delete address');
-      }
-    }
+  const handleDeleteAddress = (id) => {
+    showConfirm({
+      title: 'Delete Address',
+      message: 'Are you sure you want to delete this delivery address?',
+      confirmText: 'Delete',
+      onConfirm: async () => {
+        try {
+          await addressApi.deleteAddress(id);
+          setAddresses(addresses.filter(a => a.id !== id));
+        } catch (err) {
+          showAlert(err.message || 'Could not delete address', 'Error', 'error');
+        }
+      },
+    });
   };
 
   return (

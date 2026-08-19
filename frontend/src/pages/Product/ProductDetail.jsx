@@ -7,12 +7,14 @@ import { ErrorState } from '../../components/common/ErrorState';
 import { productsApi } from '../../api/products.api';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useDialog } from '../../context/DialogContext';
 
 export const ProductDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const { showAuthModal, showAlert } = useDialog();
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -24,6 +26,7 @@ export const ProductDetail = () => {
   const [activeTab, setActiveTab] = useState('description');
   const [adding, setAdding] = useState(false);
   const [addedMsg, setAddedMsg] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const loadProduct = async () => {
     try {
@@ -74,7 +77,7 @@ export const ProductDetail = () => {
   const handleAddToCart = async () => {
     const targetId = product?.id || product?.product?.id;
     if (!targetId) {
-      alert('Product information is not loaded correctly.');
+      showAlert('Product information is not loaded correctly.', 'Error', 'error');
       return;
     }
     try {
@@ -83,7 +86,12 @@ export const ProductDetail = () => {
       setAddedMsg(true);
       setTimeout(() => setAddedMsg(false), 3000);
     } catch (err) {
-      alert(err.message || 'Failed to add item to cart');
+      const msg = err.message || 'Failed to add item to cart';
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('login') || msg.toLowerCase().includes('authenticated')) {
+        showAuthModal(msg);
+      } else {
+        showAlert(msg, 'Notice', 'error');
+      }
     } finally {
       setAdding(false);
     }
@@ -92,7 +100,7 @@ export const ProductDetail = () => {
   const handleBuyNow = async () => {
     const targetId = product?.id || product?.product?.id;
     if (!targetId) {
-      alert('Product information is not loaded correctly.');
+      showAlert('Product information is not loaded correctly.', 'Error', 'error');
       return;
     }
     try {
@@ -100,9 +108,30 @@ export const ProductDetail = () => {
       await addToCart(targetId, quantity);
       navigate('/checkout');
     } catch (err) {
-      alert(err.message || 'Could not proceed to checkout');
+      const msg = err.message || 'Could not proceed to checkout';
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('login') || msg.toLowerCase().includes('authenticated')) {
+        showAuthModal(msg);
+      } else {
+        showAlert(msg, 'Notice', 'error');
+      }
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    try {
+      setWishlistLoading(true);
+      await toggleWishlist(product);
+    } catch (err) {
+      const msg = err.message || 'Failed to update wishlist';
+      if (msg.toLowerCase().includes('sign in') || msg.toLowerCase().includes('login') || msg.toLowerCase().includes('authenticated')) {
+        showAuthModal(msg);
+      } else {
+        showAlert(msg, 'Notice', 'error');
+      }
+    } finally {
+      setWishlistLoading(false);
     }
   };
 
@@ -241,7 +270,8 @@ export const ProductDetail = () => {
             )}
 
             <button
-              onClick={() => toggleWishlist(product)}
+              onClick={handleToggleWishlist}
+              disabled={wishlistLoading}
               className="w-full flex items-center justify-center gap-2 border border-[#d2c4b4] text-[#1c1c18] hover:border-[#7b5818] hover:text-[#7b5818] py-2.5 rounded text-xs font-semibold transition cursor-pointer"
             >
               <Heart className={`w-4 h-4 ${isSaved ? 'fill-red-600 text-red-600' : ''}`} />

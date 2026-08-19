@@ -7,12 +7,14 @@ import { ordersApi } from '../../api/orders.api';
 import { paymentsApi } from '../../api/payments.api';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useDialog } from '../../context/DialogContext';
 import { ErrorState } from '../../components/common/ErrorState';
 
 export const Checkout = () => {
   const navigate = useNavigate();
   const { cart, fetchCart } = useCart();
   const { user, isAuthenticated } = useAuth();
+  const { showAlert } = useDialog();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState('');
@@ -80,7 +82,8 @@ export const Checkout = () => {
       setSelectedAddressId(created.id);
       setShowAddressModal(false);
       setNewAddress({
-        fullName: user?.name || '',
+        title: 'Home',
+        recipientName: '',
         phone: '',
         addressLine1: '',
         addressLine2: '',
@@ -91,7 +94,7 @@ export const Checkout = () => {
         isDefault: false,
       });
     } catch (err) {
-      alert(err.message || 'Failed to save address');
+      showAlert(err.message || 'Failed to save address', 'Address Error', 'error');
     } finally {
       setProcessing(false);
     }
@@ -99,7 +102,7 @@ export const Checkout = () => {
 
   const handleExecutePayment = async () => {
     if (!selectedAddressId) {
-      alert('Please select or add a delivery address to proceed.');
+      showAlert('Please select or add a delivery address to proceed.', 'Address Required', 'warning');
       return;
     }
 
@@ -150,7 +153,7 @@ export const Checkout = () => {
             await fetchCart();
             navigate(`/orders/${orderId}?success=true`);
           } catch (verErr) {
-            alert('Payment verification failed: ' + verErr.message);
+            showAlert('Payment verification failed: ' + verErr.message, 'Payment Error', 'error');
           }
         },
         modal: {
@@ -164,7 +167,7 @@ export const Checkout = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {
-        alert('Razorpay SDK failed to load. Please refresh and try again.');
+        showAlert('Razorpay SDK failed to load. Please refresh and try again.', 'SDK Error', 'error');
         setProcessing(false);
       }
 
